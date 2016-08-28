@@ -70,7 +70,7 @@
 
 \maketitle
 
-\section{A quick example from programming}
+\section{A quick overview from programming}
 \label{sec:a_quick_example_from_programming}
 Consider a C program with signature \verb!int f(int)!.  Now describe
 all possible computations this program can do.  This is a difficult
@@ -87,17 +87,17 @@ funny business went on inside this function.  Thus, reasoning about
 pure programs is a lot easier.
 
 However, a practical programmer might now be asking, ``How do we get
-any real work done in a pure setting?''  From stage left enters the
-monad.  These allow for us to annotate the return types of functions
-to indicate which side effects the function will use.  For example,
-say we wanted \verb!f! to use a global state of a integers, then its
-type would be \verb!f :: Int -> State [Int] Int! to indicate that
-\verb!f! will take in an integer input, then during computation will
-use a global state consisting of a list of integers, but then
+any real work done in a pure setting?''.  From stage left enters the
+monad.  These allow for a programmer to annotate the return types of
+functions to indicate which side effects the function will use.  For
+example, say we wanted \verb!f! to use a global state of integers,
+then its type would be \verb!f :: Int -> State [Int] Int! to indicate
+that \verb!f! will take in an integer input, then during computation
+will use a global state consisting of a list of integers, but then
 eventually return an integer.  Thus, the return type of \verb!f!
-literally lists the side effects the function will use.  Now while
-reasoning about programs we know exactly which side effects to
-consider.
+  literally lists the side effects the function will use.  Now while
+  reasoning about programs we know exactly which side effects to
+  consider.
 
 In full generality a monad is a type constructor \verb!m : * -> *!
 where \verb!*! is the universe of types.  Given a type \verb!a! we
@@ -110,7 +110,24 @@ Suppose we have \verb!f :: a -> m b! and \verb!g :: b -> m c!, and we
 wish to apply \verb!g! to the value returned by \verb!f!. This sounds
 perfectly reasonable, but ordinary composition \verb!g.f! does not
 suffice, because the return type of \verb!f! is not identical to the
-input type of \verb!g!.  
+input type of \verb!g!.  Thus, we must come up with a new type of
+composition.  To accomplish this in Haskell we first need a new
+operator called \textit{bind} which is denoted by
+\verb!>>= :: m b -> (b -> m c) -> m c!.  Then composition of \verb!f!
+and \verb!g! can be defined by
+\verb!\x -> ((f x) >>= g) :: a -> m c!.
+
+So we have a composition for functions whose type has the shape
+\verb!a -> m b!, but any self respecting composition has an identity.
+This implies that we need some function \verb!id :: a -> m a!, such
+that, $\verb!(\x -> (f x) >>= id)! = \verb!f!$ and
+$\verb!(\x -> (id x) >>= g)! = \verb!g!$.  This identity is denoted by
+\verb!return :: a -> m a! in Haskell, and has to be taken as
+additional structure, because it cannot be defined in terms of bind.
+
+Using \verb!bind! and \verb!return! in combination with products, sum
+types, and higher-order functions a large number of monads can be
+defined, but what are monads really?
 % section a_quick_example_from_programming (end)
 
 \section{What is a monad really?}

@@ -7,7 +7,7 @@ Sept. 9.
 
 Topics:
 
-  - A quick example from programming
+  - A quick overview from programming
   - What is a monad really?
   - A short history
   - Jumping inside a monad
