@@ -1,0 +1,144 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{An introduction to that which shall not be named}
+\author{Harley Eades III\\Computer Science\\Augusta University\\\href{mailto:heades@augusta.edu}{heades@augusta.edu}}
+\date{September 2016}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{amssymb, amsthm, amsmath, stmaryrd}
+\usepackage{mathpartir}
+\usepackage{mdframed}           % For the boxes around the systems.
+\usepackage{cmll}
+\usepackage[barr]{xy}
+
+%% This renames Barr's \to to \mto.  This allows us to use \to for imp
+%% and \mto for a inline morphism.
+\let\mto\to
+\let\to\relax
+\newcommand{\to}{\rightarrow}
+
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{enumerate}
+\usepackage{todonotes}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\let\b\relax
+\let\d\relax
+\let\t\relax
+
+\newcommand{\F}{\mathop{\textbf{F}}}
+\renewcommand{\P}{\mathop{\textbf{P}}}
+\newcommand{\G}{\mathop{\textbf{G}}}
+\renewcommand{\H}{\mathop{\textbf{H}}}
+
+\newcommand{\cat}[1]{\mathcal{#1}}
+\newcommand{\pd}[0]{\times}
+\newcommand{\ihom}[0]{\rightarrow}
+\newcommand{\st}[2]{\mathsf{st}_{#1,#2}}
+\newcommand{\id}[0]{\mathsf{id}}
+\newcommand{\b}[1]{\mathsf{b}_{#1}}
+\newcommand{\d}[1]{\mathsf{d}_{#1}}
+\newcommand{\m}[1]{\mathsf{m}_{#1}}
+\newcommand{\n}[1]{\mathsf{n}_{#1}}
+\newcommand{\p}[1]{\mathsf{p}_{#1}}
+\newcommand{\q}[1]{\mathsf{q}_{#1}}
+\newcommand{\t}[0]{\mathsf{t}}
+\newcommand{\limp}[0]{\multimap}
+\newcommand{\Hom}[3]{\mathsf{Hom}_{#1}(#2,#3)}
+
+\def\cW{\color{white}}
+
+%% Begin Ott
+
+%% End Ott
+                                   
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{notn}[theorem]{Notation}
+\newtheorem{observation}[theorem]{Observation}
+
+\begin{document}
+
+\maketitle
+
+\section{A quick example from programming}
+\label{sec:a_quick_example_from_programming}
+Consider a C program with signature \verb!int f(int)!.  Now describe
+all possible computations this program can do.  This is a difficult
+task, because this function could do a lot, like, prompt the user for
+input, send packets across the network, modify global state, and much
+more, but then eventually return an integer.
+
+Now consider a purely functional programming language like Haskell
+\cite{Haskell} and list all the possible computations the function
+\verb!f :: Int -> Int! can do. The list is a lot smaller.  We know
+without a doubt that this function must take an integer as an input,
+and then do integer computations, and finally return an integer.  No
+funny business went on inside this function.  Thus, reasoning about
+pure programs is a lot easier.
+
+However, a practical programmer might now be asking, ``How do we get
+any real work done in a pure setting?''  From stage left enters the
+monad.  These allow for us to annotate the return types of functions
+to indicate which side effects the function will use.  For example,
+say we wanted \verb!f! to use a global state of a integers, then its
+type would be \verb!f :: Int -> State [Int] Int! to indicate that
+\verb!f! will take in an integer input, then during computation will
+use a global state consisting of a list of integers, but then
+eventually return an integer.  Thus, the return type of \verb!f!
+literally lists the side effects the function will use.  Now while
+reasoning about programs we know exactly which side effects to
+consider.
+
+
+% section a_quick_example_from_programming (end)
+
+\section{What is a monad really?}
+\label{sec:what_is_a_monad_really}
+
+% section what_is_a_monad_really (end)
+
+\section{A short history}
+\label{sec:a_short_history}
+\cite{Moggi:1988}
+% section a_short_history (end)
+
+\section{Jumping inside a monad}
+\label{sec:jumping_inside_a_monad}
+\subsection{The Kleisli category}
+\label{subsec:the_kleisli_category}
+
+% subsection the_kleisli_category (end)
+
+\subsection{The Eilenberg-Moore category}
+\label{subsec:the_eilenberg-moore_category}
+
+% subsection the_eilenberg-moore_category (end)
+
+\subsection{Why not an example from linear logic?}
+\label{subsec:why_not_an_example_from_linear_logic}
+
+% subsection why_not_an_example_from_linear_logic (end)
+% section jumping_inside_a_monad (end)
+
+\section{Monads are modular, right?}
+\label{sec:monads_are_modular,_right?}
+
+% section monads_are_modular,_right? (end)
+
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
+
