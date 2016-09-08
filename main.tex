@@ -5,11 +5,9 @@
 \author{Harley Eades III\\Computer Science\\Augusta University\\\href{mailto:heades@augusta.edu}{heades@augusta.edu}}
 \date{September 2016}
 
-\usepackage{graphicx}
-\usepackage{amssymb, amsthm, amsmath, stmaryrd}
+\usepackage{amsthm, amsmath}
 \usepackage{mathpartir}
 \usepackage{mdframed}           % For the boxes around the systems.
-\usepackage{cmll}
 \usepackage[barr]{xy}
 
 %% This renames Barr's \to to \mto.  This allows us to use \to for imp
@@ -18,12 +16,10 @@
 \let\to\relax
 \newcommand{\to}{\rightarrow}
 
-\usepackage{wasysym}
 \usepackage{proof}
 \usepackage{enumerate}
 \usepackage{todonotes}
 \usepackage{hyperref}
-\usepackage{graphicx}
 
 \let\b\relax
 \let\d\relax
@@ -132,19 +128,319 @@ defined, but what are monads really?
 
 \section{What is a monad really?}
 \label{sec:what_is_a_monad_really}
+Monad's first arose in category theory and go back to Eilenberg and
+MacLane \cite{MacLane:1971}, but Moggi was the first to propose that
+they be used to model effectful computation in a pure setting
+\cite{Moggi:1988}.  After learning about Moggi's work Wadler pushed
+for their adoption by the functional programming community
+\cite{jones1993glasgow,Wadler:1990:CM:91556.91592,Wadler:1992:EFP:143165.143169,Wadler:1995}. This
+push resulted in the adoption of monads as the primary means of
+effectful programming in Haskell.
 
+In the most general sense a monad is defined as follows:
+\begin{definition}
+  \label{def:monad}
+  Suppose $\cat{C}$ is a category.  Then a \textbf{monad} is a functor
+  $T : \cat{C} \mto \cat{C}$ equipped with two natural transformations
+  $\eta_A : A \mto T A$ and $\mu_A : T^2 A \mto TA$ such that the
+  following diagrams commute:
+  \[
+  \begin{array}{ccc}
+    \bfig
+    \Square|amma|[
+      T^3 A`
+      T^2A`
+      T^2A`
+      TA;
+      T\mu_A`
+      \mu_{TA}`
+      \mu_A`
+      \mu_A]
+    \efig
+    & \quad &
+    \bfig
+    \qtriangle|amm|/->`=`->/[
+      TA`
+      T^2A`
+      TA;
+      \eta_{TA}``
+      \mu_A]
+    \btriangle|mma|/->`=`->/[
+      TA`
+      T^2A`
+      TA;
+      T\eta_A``
+      \mu_A]
+    \efig
+  \end{array}
+  \]
+\end{definition}
+From a computational perspective one should think of an object $A$ as
+being the type of values, and the object $TA$ as the type of
+computations.  Then $\eta_A : A \mto TA$ says that all values are
+computations that eventually yield a value of type $A$, and $\mu_A :
+T^2A \mto TA$ says forming the type of computations that eventually
+yield a computation of type $TA$ is just as good as a computation of
+type $TA$.  We can also think of $TA$ as capturing all of the possible
+computations where $T^2A$ really does not add anything new.  We will
+see that join allows for a very interesting form of composition to be
+defined.
+
+The diagrams above tell us how $\eta$ and $\mu$ interact together.
+For example, inserting a computation of type $TA$ into the type of
+computations of type $T^2A$, and then joining $T^2A$ to yield $TA$
+does not do anything to the input.  That is, $\eta_{TA};\mu_A =
+\id_{TA}$.  These diagrams will ensure that program evaluation behaves
+correctly in the model.
+
+Consider an example.  The functor $\mathcal{P} : \mathsf{Set} \mto
+\mathsf{Set}$ defined as $\mathcal{P}(X) = \{S \subseteq X\}$.  First,
+we need to check to make sure this is an endofunctor so suppose $f : A
+\mto B$ is a function, then we can define $\mathcal{P}(f)(X \subseteq
+A) = \{f(x) \mid x \in X \} : \mathcal{P}(A) \mto
+\mathcal{P}(B)$. Suppose $f : A \mto B$ and $g : B \mto C$.  Then
+composition is preserved $\mathcal{P}(f;g) =
+\mathcal{P}(f);\mathcal{P}(g) : \mathcal{P}(A) \mto \mathcal{P}(C)$.  We
+can also see that $\mathcal{P}(\id_A) =
+\id_{\mathcal{P}(A)} : \mathcal{P}(A) \mto \mathcal{P}(A)$.
+
+It turns out that this functor is indeed a monad:
+\[
+\begin{array}{lll}
+  \eta_A(x) = \{x\} : A \mto \mathcal{P}(X)\\
+  \mu_A(X) = \bigcup_{S \in X}S : \mathcal{P}(\mathcal{P}(A)) \mto \mathcal{P}(A)\\
+\end{array}
+\]
+Now we must verify that the diagrams for a monad commute:
+\[
+\begin{array}{ccc}
+  \bfig
+  \Square|amma|[
+    \mathcal{P}^3 (A)`
+    \mathcal{P}^2(A)`
+    \mathcal{P}^2(A)`
+    \mathcal{P}(A);
+    \mathcal{P}\mu_A`
+    \mu_{\mathcal{P}(A)}`
+    \mu_A`
+    \mu_A]
+  \efig
+  & \quad &
+  \bfig
+  \qtriangle|amm|/->`=`->/[
+    \mathcal{P}(A)`
+    \mathcal{P}^2(A)`
+    \mathcal{P}(A);
+    \eta_{\mathcal{P}(A)}``
+    \mu_A]
+  \btriangle|mma|/->`=`->/[
+    \mathcal{P}(A)`
+    \mathcal{P}^2(A)`
+    \mathcal{P}(A);
+    \mathcal{P}\eta_A``
+    \mu_A]
+  \efig
+\end{array}
+\]
+Using diagram chasing\footnote{Chasing an element in $\mathcal{P}(A)$
+  across the top path, and then across the bottom path should echo
+  back what we started with.} it is easy to see that the diagrams on
+the right commute.  The left most diagram commutes by the following
+equational reasoning:
+\[
+\begin{array}{lll}
+  \mu_{A}(\mathcal{P}(\mu_A)(S \in \mathcal{P}^3(A)))
+  & = & \mu_{A}(\{\mu_A(S') \mid S' \in S\})\\
+  & = & \bigcup_{S'' \in (\{\mu_A(S') \mid S' \in S\})} S''\\
+  & = & \bigcup_{S''' \in \bigcup_{S'' \in S} S''}S'''\\
+  & = & \bigcup_{S''' \in \mu_{\mathcal{P}(A)}(S)}S'''\\
+  & = & \mu_{A}(\mu_{\mathcal{P}(A)}(S))\\
+\end{array}
+\]
+Functions with a type of the form $A \mto \mathcal{P}(B)$ have a
+special place in computer science, because they model non-determinism.
 % section what_is_a_monad_really (end)
-
-\section{A short history}
-\label{sec:a_short_history}
-\cite{Moggi:1988}
-% section a_short_history (end)
 
 \section{Jumping inside a monad}
 \label{sec:jumping_inside_a_monad}
+
+Suppose $(T : \cat{C} \mto \cat{C},\eta,\mu)$ is a monad.  Then we can
+think of $\cat{C}$ as the pure world, and the world inside $T$ as the
+impure world, or the universe of computations.  Given such a monad can
+we define exactly what this impure world is?  In turns out we can by
+constructing the underlying category of the monad.  There happens to
+be two such categories, but they are related.
+
 \subsection{The Kleisli category}
 \label{subsec:the_kleisli_category}
+Suppose we have a monad $(T,\eta,\mu)$ on some category $\cat{C}$.
+Then the \textbf{Kleisli category} of the monad $T$, denoted
+$\cat{C}_T$, has as objects the objects $\cat{C}$, and as morphisms
+all the morphisms of $\cat{C}$ of the form $f : A \mto TB$.
 
+It is common to see the later as being defined as if $f : A \mto TB$
+is a morphism of $\cat{C}$, then $\hat{f} : A \mto B$ is a morphism of
+$\cat{C}_T$.  However, this can often lead to confusion, and so for
+this lecture we will be explicit about the form of $f$, and use the
+former definition.
+
+Before we can do anything we must first show that $\cat{C}_T$ is
+indeed a category.
+\begin{lemma}
+  \label{lemma:Kleisli_is_a_category}
+  Suppose $(T,\eta,\mu)$ is a monad on $\cat{C}$.  Then the Kleisli
+  construction $\cat{C}_T$ is a category.
+\end{lemma}
+\begin{proof}
+  Suppose $f : A \mto TB$ is a morphism.  Then the \textbf{Kleisli
+    lifting} of $f$ is the morphism $\overline{f}$:
+  \[ 
+  \bfig
+  \qtriangle[
+    TA`
+    T^2B`
+    TB;
+    Tf`
+    \overline{f}`
+    \mu_B]
+  \efig
+  \]
+  \noindent
+  \textbf{Composition.} Suppose $f : A \mto TB$ and $g : B \mto TC$
+  are two morphisms in $\cat{C}_T$.  Then their composition is defined
+  by $f;\overline{g}$.  Thus, composition in $\cat{C}_T$ is composition in
+  $\cat{C}$ where the second morphism is lifted.
+
+  We have to prove that this composition is associative.  Suppose
+  $f : A \mto TB$, $g : B \mto TC$, and $g : C \mto TD$ are morphisms
+  of $\cat{C}_T$.  Then we must show that:
+  \[
+  (f;\overline{g});\overline{h} = f;\overline{(g;\overline{h})}
+  \]  
+  We can prove this by showing that the following diagram commutes:
+  \[
+  \bfig
+  \square|amma|/->`->``->/<800,1000>[
+    A`
+    TB`
+    TB`
+    T^2C;
+    f`
+    f``
+    Tg]
+  \square(800,0)|amma|/->``->`->/<800,1000>[
+    TB`
+    T^2C`
+    T^2C`
+    T^3D;
+    Tg``
+    T^2h`
+    T^2h]
+  \square(1600,0)|amma|/->`->``->/<800,1000>[
+    T^2C`
+    TC`
+    T^3D`
+    T^2D;
+    \mu_C`
+    T^2h``
+    T\mu_D]
+  \square(2400,0)|amma|/->``->`->/<800,1000>[
+    TC`
+    T^2D`
+    T^2D`
+    TD;
+    Th``
+    \mu_D`
+    \mu_D]
+  \Atriangle(1600,0)/<-`->`/<800,500>[
+    T^2D`
+    T^3D`
+    TD;
+    \mu_{TD}`
+    \mu_D`]
+  \morphism(2400,1000)|m|<0,-500>[
+    TC`
+    T^2D;
+    Th]
+  \efig
+  \]
+  The left square trivially commutes, the left-most upper-right square
+  commutes by naturality of $\mu$, the right-most upper-right square
+  trivially commutes, and the right-lower triangle commutes by the
+  monad laws.
+
+  \ \\
+  \noindent
+  \textbf{Identities.} Suppose $A$ is an object of $\cat{C}_T$.  Then
+  we need to show there there exists a morphism $\id_A : A \mto TA$
+  such that for any morphism $f : A \mto TB$ we have
+  $\id_A;\overline{f} = f = f;\overline{\id_B}$.  The only option we
+  have is $\eta_A : A \mto TA$, because it is the only morphism with
+  the required form that we know always exists.  The following
+  commutative diagrams imply our desired property:
+  \[
+  \begin{array}{lll}
+    \bfig
+    \Vtrianglepair/->`->`->``->/<500,500>[
+      A`
+      TB`
+      T^2B`
+      TB;
+      f`
+      \eta_{TA}`
+      f``
+      \mu_B]
+    \Atriangle(0,500)/<-`->`/<500,500>[
+      TA`
+      A`
+      T^2B;
+      \eta_A`
+      Tf`]
+    \morphism(500,500)/=/<0,-500>[
+      TB`
+      TB;]
+    \efig
+    & \quad &
+    \bfig
+    \Vtrianglepair/->`->`->``->/<500,500>[
+      A`
+      TB`
+      T^2B`
+      TB;
+      f`
+      T\eta_B`
+      f``
+      \mu_B]
+    \morphism(500,500)/=/<0,-500>[
+      TB`
+      TB;]
+    \efig
+  \end{array}
+  \]  
+  The left diagram commutes, because the upper triangle commutes by
+  naturality of $\eta$, and the lower-left triangle commutes by the
+  monad laws. The right diagram commutes, because the right-most
+  diagram commutes by the monad laws.
+\end{proof}
+
+Notice that the previous proof explicitly defines the notion of
+Kleisli lifting of a morphism.  The astute reader will notice that we
+have seen this before.  Consider monads from a functional programming
+perspective, we can see that \verb!return : A -> m A! corresponds to
+$\eta_A : A \mto TA$, but what does bind,
+\verb!>>= :: m b -> (b -> m c) -> m c!, correspond to?  Surely it is
+not $\mu_A : T^2A \mto TA$.  Consider the following equivalent form of
+bind obtained by currying:
+\[
+\verb!>>=' :: (b -> m c) -> (m b -> m c)!
+\]
+This looks a lot like the Kleisli lifting:
+\[
+\mathsf{Hom}_{\cat{C}}(B,TC) \mto \mathsf{Hom}_{\cat{C}}(TB,TC)
+\]
+In fact, it is!  One of the most important realizations that Moggi had
+was that programming in a monad amounts to programming in the Kleisli
+category of the monad.
 % subsection the_kleisli_category (end)
 
 \subsection{The Eilenberg-Moore category}
@@ -152,11 +448,13 @@ defined, but what are monads really?
 
 % subsection the_eilenberg-moore_category (end)
 
-\subsection{Why not an example from linear logic?}
-\label{subsec:why_not_an_example_from_linear_logic}
-
-% subsection why_not_an_example_from_linear_logic (end)
 % section jumping_inside_a_monad (end)
+
+\section{Categorical Model of $\lambda_T$}
+\label{sec:categorical_model_of_lambdaT}
+
+% section categorical_model_of_lambdaT (end)
+
 
 \section{Monads are modular, right?}
 \label{sec:monads_are_modular,_right?}
@@ -164,8 +462,7 @@ defined, but what are monads really?
 % section monads_are_modular,_right? (end)
 
 
-\bibliographystyle{plain}
-\bibliography{references}
+\bibliographystyle{plain} \bibliography{references}
 
 \end{document}
 
