@@ -9,9 +9,8 @@ Topics:
 
   - A quick overview from programming
   - What is a monad really?
-  - A short history
   - Jumping inside a monad
     - The Kleisli category
     - The Eilenberg-Moore category
-    - Why not an example from linear logic?
+  - Categorical Model of \lambda_T
   - Monads are modular, right?
