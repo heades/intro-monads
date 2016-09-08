@@ -440,7 +440,10 @@ This looks a lot like the Kleisli lifting:
 \]
 In fact, it is!  One of the most important realizations that Moggi had
 was that programming in a monad amounts to programming in the Kleisli
-category of the monad.
+category of the monad.  As we can see \verb!bind! and $\mu$ are not
+completely unrelated, and one can actually define each of them in
+terms of the other.  So monads could be defined in terms of bind and
+then we could derive $\mu$, but we leave the details to the reader.
 % subsection the_kleisli_category (end)
 
 \subsection{The Eilenberg-Moore category}
