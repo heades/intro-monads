@@ -1,0 +1,122 @@
+% -*- compile-command: "make" -*-
+
+metavar termvar, x, z ::=
+metavar monadvar, T ::=
+
+indexvar index, k, i ::=
+
+grammar
+  t :: 't_' ::=                                {{ com term }}
+    | triv                ::   :: unit         {{ com  trival }}
+    {{tex \mathsf{triv} }}
+    | x                   ::   :: var          {{ com variable }}
+    | ( t1 , t2 )         ::   :: pair         {{ com pair }}
+    | fst t               ::   :: first        {{ com first projection }}
+    {{tex \mathsf{fst}\,[[t]] }}
+    | snd t               ::   :: second       {{ com second projection }}
+    {{tex \mathsf{snd}\,[[t]] }}
+    | \ x : A . t         ::   :: function     {{ com function }}
+    {{tex \lambda [[x]]:[[A]].[[t]] }}
+    | t1 t2               ::   :: app          {{ com function application }}
+    | return t            ::   :: return       {{ com monadic return }}
+    {{tex \mathsf{return}\,[[t]] }}
+    | let x <- t1 in t2   ::   :: bind         {{ com monadic bind }}
+    {{tex \mathsf{let}\,[[x]] \leftarrow [[t1]]\,\mathsf{in}\,[[t2]] }}
+    | ( t )               :: S :: parens    
+    | h( t )              :: M :: hparens
+    {{tex [[t]] }}
+    | [ t1 / x ] t2       :: M :: subst
+    | [ t ]               :: M :: interp
+    {{tex \interp{[[t]]} }}
+    | T t                 :: M :: T
+    
+  A, B, C :: 'A_' ::=                          {{ com type }}
+    | 1                   ::   :: unit         {{ com unit type }}
+    | T A                 ::   :: monad        {{ com monadic type }}
+    | A1 x A2             ::   :: product      {{ com product type }}
+    {{tex [[A1]] \times [[A2]] }}
+    | A1 -> A2            ::   :: arrow        {{ com function type }}
+    | ( A )               :: S :: paren
+    | [ A ]               :: M :: interp
+    {{tex \interp{[[A]]} }}
+
+  G {{ tex \Gamma }} :: G_ ::=                 {{ com typing context }}
+    | .                   ::   :: em           {{ com empty context }}
+    {{tex \cdot }}
+    | x : A               ::   :: vn           {{ com cons }}
+    | G , G'              :: M :: append       {{ com append }}
+    | [ G ]               :: M :: interp
+    {{tex \interp{[[G]]} }}    
+
+  terminals :: 'terminals_' ::=
+    |  ->                 ::   :: arrow
+      {{tex \rightarrow }}
+    | |-                  ::   :: turnstile
+      {{tex \vdash }}
+    | ~>                  ::   :: red
+    {{tex \rightsquigarrow }}
+
+  formula :: 'formula_' ::=
+    | judgement           ::   :: judgement
+    | formula1 && formula2 ::   :: quad
+    {{tex [[formula1]] \quad [[formula2]] }}
+    | ( formula )         :: S :: parens
+    {{tex [[formula]] }}
+
+defns
+  Typing :: '' ::=
+
+defn
+    G |- t : A :: :: type :: ''    {{ com [[t]] has type [[A]] in context [[G]] }}
+by
+
+  -------------------- :: var
+  G1,x : A,G2 |- x : A
+
+  ------------- :: triv
+  G |- triv : 1
+
+  G |- t1 : A && G |- t2 : B
+  -------------------------- :: pair
+  G |- (t1 , t2) : A x B
+
+  G |- t : A x B
+  -------------- :: first
+  G |- fst t : A
+
+  G |- t : A x B
+  -------------- :: second
+  G |- snd t : B
+
+  G, x : A |- t : B
+  -------------------- :: lambda
+  G |- \x:A.t : A -> B
+
+  G |- t2 : A
+  G |- t1 : A -> B
+  ---------------- :: app
+  G |- t1 t2 : B
+
+  G |- t : A
+  ------------------- :: return
+  G |- return t : T A
+
+  G |- t1 : T A && G,x : A |- t2 : T B
+  ------------------------------------ :: bind
+  G |- let x <- t1 in t2 : T B
+
+defn
+    t1 ~> t2 :: :: red :: 'r_'    {{ com [[t1]] evaluates to [[t2]] }}
+by
+
+  ------------------------ :: beta
+  (\x:A.t2) t1 ~> [t1/x]t2
+
+  ----------------- :: first
+  fst (t1,t2) ~> t1
+
+  ----------------- :: second
+  snd (t1,t2) ~> t2
+
+  ------------------------------------ :: bind
+  let x <- return t1 in t2 ~> [t1/x]t2

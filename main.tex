@@ -5,11 +5,11 @@
 \author{Harley Eades III\\Computer Science\\Augusta University\\\href{mailto:heades@augusta.edu}{heades@augusta.edu}}
 \date{September 2016}
 
-\usepackage{amsthm, amsmath}
+\usepackage{amsthm, amsmath, amssymb}
 \usepackage{mathpartir}
 \usepackage{mdframed}           % For the boxes around the systems.
 \usepackage[barr]{xy}
-
+\input{type-theory_inc}
 %% This renames Barr's \to to \mto.  This allows us to use \to for imp
 %% and \mto for a inline morphism.
 \let\mto\to
@@ -48,7 +48,17 @@
 \def\cW{\color{white}}
 
 %% Begin Ott
-
+\input{lambdaT-inc}
+\renewcommand{\Ottdrule}[4][]{{\displaystyle\frac{\begin{array}{l}#2\end{array}}{#3}\,#4}}
+\renewcommand{\OttdrulevarName}[0]{\text{var}}
+\renewcommand{\OttdruletrivName}[0]{1_i}
+\renewcommand{\OttdrulepairName}[0]{\times_i}
+\renewcommand{\OttdrulefirstName}[0]{\times_{e_1}}
+\renewcommand{\OttdrulesecondName}[0]{\times_{e_2}}
+\renewcommand{\OttdrulelambdaName}[0]{\lambda_i}
+\renewcommand{\OttdruleappName}[0]{\lambda_e}
+\renewcommand{\OttdrulereturnName}[0]{T_i}
+\renewcommand{\OttdrulebindName}[0]{T_e}
 %% End Ott
                                    
 \newtheorem{theorem}{Theorem}
@@ -275,7 +285,7 @@ be two such categories, but they are related.
 \label{subsec:the_kleisli_category}
 Suppose we have a monad $(T,\eta,\mu)$ on some category $\cat{C}$.
 Then the \textbf{Kleisli category} of the monad $T$, denoted
-$\cat{C}_T$, has as objects the objects $\cat{C}$, and as morphisms
+$\cat{C}_T$, has as objects the objects of $\cat{C}$, and as morphisms
 all the morphisms of $\cat{C}$ of the form $f : A \mto TB$.
 
 It is common to see the later as being defined as if $f : A \mto TB$
@@ -432,7 +442,7 @@ $\eta_A : A \mto TA$, but what does bind,
 not $\mu_A : T^2A \mto TA$.  Consider the following equivalent form of
 bind obtained by currying:
 \[
-\verb!>>=' :: (b -> m c) -> (m b -> m c)!
+\verb!>>= :: (b -> m c) -> (m b -> m c)!
 \]
 This looks a lot like the Kleisli lifting:
 \[
@@ -448,7 +458,143 @@ then we could derive $\mu$, but we leave the details to the reader.
 
 \subsection{The Eilenberg-Moore category}
 \label{subsec:the_eilenberg-moore_category}
+A second more general category that corresponds to the universe inside
+of a monad is called the Eilenberg-Moore category.  Suppose $(T,
+\eta,\delta)$ is a monad on the category $\cat{C}$.  Then a
+\textbf{$T$-algebra} is a pair $(A,h_A)$ of an object $A$ of $\cat{C}$
+and a morphism, called the structure map, $h_A : TA \mto A$ such that
+the following diagrams commute:
+\[
+\begin{array}{lll}
+  \bfig
+\square|amma|<700,500>[
+  T^2A`
+  TA`
+  TA`
+  A;
+  Th_A`
+  \mu_A`
+  h_A`
+  h_A]
+\efig
+& \quad &
+\bfig
+\qtriangle|amm|/->`=`->/[
+  A`
+  TA`
+  A;
+  \eta_A``
+  h_A]
+\efig
+\end{array}
+\]
+A morphism $f : (A,h_A) \mto (B,h_B)$ between $T$-algebras is a
+morphism $f : A \mto B$ of $\cat{C}$ such that the following diagram
+commutes:
+\[
+\bfig
+\square|amma|<700,500>[
+  TA`
+  TB`
+  A`
+  B;
+  Tf`
+  h_A`
+  h_B`
+  f]
+\efig
+\]
+The \textbf{Eilenberg-Moore category} $\cat{C}^T$ of a monad
+$(T,\eta,\mu)$ has as objects all the $T$-algebras and as morphisms
+all of the $T$-algebras morphisms.  The categorical structure of
+$\cat{C}^T$ is inherited from the underlying category $\cat{C}$ as the
+following result shows.
+\begin{lemma}
+  \label{lemma:EMC-is-cat}
+  Suppose $(T,\eta,\mu)$ is a monad on a category $\cat{C}$.  Then
+  $\cat{C}^T$ is a category.
+\end{lemma}
+\begin{proof}
+  Suppose $(T,\eta,\mu)$ is a monad on a category $\cat{C}$.
 
+  \ \\
+  \noindent
+  \textbf{Composition.}  Suppose $f : (A,h_A) \mto (B,h_B)$ and $g :
+  (B,h_B) \mto (C,h_C)$ are two $T$-algebra morphisms.  The
+  composition $f;g : A \mto C$ is a $T$-algebra morphism between
+  $T$-algebras $(A,h_A)$ and $(C,h_C)$ because the following diagram
+  commutes:
+  \[
+  \bfig
+  \square|amma|<700,500>[
+    TA`
+    TB`
+    A`
+    B;
+    Tf`
+    h_A`
+    h_B`
+    f]
+    \square(700,0)|amma|<700,500>[
+    TB`
+    TC`
+    B`
+    C;
+    Tg`
+    h_B`
+    h_C`
+    g]
+  \efig
+  \]
+  Each square commutes by the respective diagram for each morphism.
+  Associativity holds trivially, because it holds in $\cat{C}$.
+
+  \ \\
+  \noindent
+  \textbf{Identities.} Given a $T$-algebra, $(A,h_A)$, we must define
+  an identity morphism $\id : (A,h_A) \mto (A,h_A)$, but we can simply
+  take $\id_A : A \mto A$ as this morphism, because the following
+  diagram commutes:
+  \[
+  \bfig
+  \square<700,500>[
+    TA`
+    TA`
+    A`
+    A;
+    T\id_A`
+    h_A`
+    h_A`
+    \id_A]
+  \efig
+  \]
+  This diagram commutes, because we know $T\id_A = \id_{TA}$, because
+  $T$ is an endofunctor on $\cat{C}$.  Composition will respect
+  identities, because composition in $\cat{C}$ does.
+\end{proof}
+
+The Eilenberg-Moore category is related to the Kleisli category in the
+following way.  Define the category $\mathsf{Free}(\cat{C}^T)$ to be
+the full subcategory of $\cat{C}^T$ with objects the free $T$-algebras
+of the form $(TA,\mu_A)$ the diagram making this a $T$-algebra is the
+monad law for $\mu$. Morphisms in $\mathsf{Free}(\cat{C}^T)$ are all
+the $T$-algebras morphisms between free $T$-algebras.
+\begin{lemma}
+  \label{lemma:the_kleisli_category_is_a_full_subcategory_of_the_eilenberg-moore_category}
+  Suppose $(T,\eta,\mu)$ is a monad on the category $\cat{C}$.  Then
+  the category $\cat{C}_T$ is a full subcategory of $\cat{C}^T$.
+\end{lemma}
+\begin{proof}
+  The full proof of this is out of scope of this short lecture note,
+  but it is possible to show that $\cat{C}_T$ is equivalent to
+  $\mathsf{Free}(\cat{C}^T)$, and hence, we obtain our result.
+\end{proof}
+
+The benefit of the Eilenberg-Moore category is that it is often easier
+to prove properties about it than the Kleisli category.  Since the
+Kleisli category is a full subcategory of the Eilenberg-Moore category
+any property that holds on the Eilenberg-Moore category also holds for
+the Kleisli category.  
 % subsection the_eilenberg-moore_category (end)
 
 % section jumping_inside_a_monad (end)
@@ -456,13 +602,204 @@ then we could derive $\mu$, but we leave the details to the reader.
 \section{Categorical Model of $\lambda_T$}
 \label{sec:categorical_model_of_lambdaT}
 
+At this point we have introduced the basics of monads categorically.
+In this section we show how to categorically model a simple type
+theory with monads called $\lambda_T$.  We can view $\lambda_T$ as the
+smallest typed functional programming language with monads, but by
+extending this language with more features one can study monads
+incrementally.
+
+The syntax for $\lambda_T$ is as follows:
+\[
+\small
+\begin{array}{lll}
+  \text{(types)}  & [[A]],[[B]],[[C]] := [[1]] \mid [[T A]] \mid [[A x B]] \mid [[A -> B]]\\
+  \text{(terms)} & [[t]] := [[x]] \mid [[triv]] \mid [[(t1,t2)]] \mid [[fst t]] \mid [[snd t]] \mid [[\x:A.t]] \mid [[t1 t2]] \mid [[return t]] \mid [[let x <- t1 in t2]]\\
+  \text{(contexts)} & [[G]] := [[.]] \mid [[x : A]] \mid [[G1,G2]]
+\end{array}
+\]
+We can see that this is an extension of the simply typed
+$\lambda$-calculus.  We add a new type $[[T A]]$ which represents an
+arbitrary monad, and new terms for return and bind denoted $[[return
+    t]]$ an $[[let x <- t1 in t2]]$ respectively.  This language is
+very similar to Moggi's metalanguage \cite{Moggi:1988}.
+
+The typing rules for $\lambda_T$ can be found in
+Figure~\ref{fig:lambdaT-typing}, and the reduction rules are in
+Figure~\ref{fig:lambdaT-eval}.
+\begin{figure}
+  \begin{mathpar}
+    \Ottdrulevar{} \and
+    \Ottdruletriv{} \and
+    \Ottdrulepair{} \and
+    \Ottdrulefirst{} \and
+    \Ottdrulesecond{} \and
+    \Ottdrulelambda{} \and
+    \Ottdruleapp{} \and
+    \Ottdrulereturn{} \and
+    \Ottdrulebind{}
+  \end{mathpar}
+  \caption{Typing Rules for $\lambda_T$}
+  \label{fig:lambdaT-typing}
+\end{figure}
+\begin{figure}
+  \begin{mathpar}
+    \OttdrulerXXbeta{} \and
+    \OttdrulerXXfirst{} \and
+    \OttdrulerXXsecond{} \and
+    \OttdrulerXXbind{}
+  \end{mathpar}
+  \caption{Reduction Rules for $\lambda_T$}
+  \label{fig:lambdaT-eval}
+\end{figure}
+The reduction rules are rather simplistic, but are advanced enough for
+the purpose of this note.  Congruence rules are omitted in the
+interest of brevity.  There are also more monadic rules that one might
+one, for example a commuting conversion of bind, but we leave these
+out.
+
+The main question of this section is, what is the categorical model of
+$\lambda_T$?  We know we can interpret $\lambda_T$ excluding the
+monadic bits into a cartesian closed category.  Thus, the model of
+full $\lambda_T$ must be some extension of a cartesian closed category
+with a monad.  Is it enough to simply take a cartesian closed category
+$\cat{C}$ with a monad $(T,\eta,\mu)$ on $\cat{C}$?
+
+Suppose $(\cat{C}, 1, \times, \to)$ is a cartesian closed category,
+and $(T,\eta,\mu)$ is a monad on $\cat{C}$.  Objects are interpreted
+into this model as follows:
+\[
+\begin{array}{lll}
+  [[ [1] ]] & = & 1\\
+  [[ [A x B] ]] & = & [[ [A] x [B] ]]\\
+  [[ [A -> B] ]] & = & [[ [A] -> [B] ]]\\
+  [[ [T A] ]] & = & [[ T [A] ]]
+\end{array}
+\]
+Contexts $\Gamma = [[x1 : A1]],\ldots,[[xi : Ai]]$ will be interpreted
+into $\cat{C}$ by $[[ [G] ]] = [[ [A1] ]] \times \cdots \times [[ [ Ai
+] ]]$.  To make the syntax less cluttered we will drop the
+interpretation brackets from types and objects.
+
+We will interpret each typing judgment $[[G |- t : A]]$ as a morphism
+$[[ [G] ]] \mto^{[[ [t] ]]} [[ [A] ]]$ by induction on the form of the
+typing judgment. Now consider the two monadic typing rules:
+\[
+\begin{array}{lll}
+  \Ottdrulereturn{} & \quad & \Ottdrulebind{}
+\end{array}
+\]
+Consider the left rule, and suppose we have a morphism $t : [[G]] \mto
+[[A]]$ in $\cat{C}$.  Then we must construct a morphism of the form
+$[[G]] \mto [[T A]]$, but this is easily done by $t;\eta_A : [[G]]
+\mto [[T A]]$.  Thus, the interpretation of $[[ [return t] ]]$ is
+$[[ [t] ]];\eta_A$.
+
+Now consider the rule $T_e$, and suppose we have morphisms $[[t1]] :
+[[G]] \mto [[T A]]$ and $[[t2]] : [[G]] \times [[A]] \mto [[T B]]$.
+We are expecting to Kleisli lift $[[t2]]$ to $\overline{t_2} = [[(T
+    t2)]];\mu_B : T ([[G]] \times [[A]]) \mto T [[B]]$, and then
+compose $\langle \id_{[[G]]} , [[t1]] \rangle : [[G]] \mto [[G]]
+\times [[T A]]$ with $\overline{t_2}$, but the types do not match!  If
+we had a natural transformation $\mathsf{st}_{A,B} : A \times T B \mto
+T(A \times B)$ then we could finish the job by interpreting
+$[[G |- let x <- t1 in t2 : T B]]$ by
+$\langle \id_{[[G]]} , [[t1]] \rangle;\mathsf{st}_{[[G]],[[A]]};\overline{t_2} : [[G]] \mto [[T B]]$.
+Therefore, an arbitrary monad does not have enough structure to model
+the bind rule in the presence of multiple hypotheses.  Instead we need
+a strong monad.
+
+\begin{definition}
+  \label{def:strong-monad}
+  A monad $(T,\eta,\mu)$ on a category $\cat{C}$ with all finite
+  products is \textbf{strong} if there exists a natural transformation
+  $\mathsf{st}_{A,B} : A \times T B \mto T(A \times B)$ called the
+  \textbf{tensorial strength} of the monad.  In addition, the following
+  diagrams must commute:
+  \begin{mathpar}
+    \bfig
+    \qtriangle|amm|<700,500>[
+      1 \times TA`
+      T(1 \times A)`
+      TA;
+      \mathsf{st}_{1,A}`
+      \rho_{TA}`
+      T\rho_A]
+    \efig
+    \and       
+    \bfig
+    \btriangle|maa|/<-``->/<1000,500>[
+      A \times TB`
+      A \times T^2 B`
+      T(A \times TB);
+      \id_A \times \mu_B``
+      \mathsf{st}_{A,TB}]
+
+    \dtriangle(800,0)|ama|/`<-`->/<1000,500>[
+      T(A \times B)`
+      T(A \times TB)`
+      T^2(A \times B);`
+      \mu_{A \times B}`
+      T\mathsf{st}_{A,B}]
+
+    \morphism(-400,500)|a|/->/<2000,0>[
+      A \times TB`
+      T(A \times B);
+      \mathsf{st}_{A,B}]
+
+    \Atriangle(-600,500)|mma|<1000,500>[
+      A \times B`
+      A \times TB`
+      T(A \times B);
+      \id_A \times \eta_B`
+      \eta_{A \times B}`]
+    \efig
+    \and
+    \bfig
+    \square|amma|/`->``->/<1000,500>[
+      (A \times B) \times C``
+      A \times (B \times C)`
+      A \times T(B \times C);`
+      \alpha_{A,B,C}``
+      \id_A \times \mathsf{st}_{B,C}]
+    \morphism(1000,0)<1200,0>[
+      A \times T(B \times C)`
+      T(A \times T(B \times C));
+      \mathsf{st}_{A,B \times C}]
+    \morphism(0,500)<2200,0>[
+      (A \times B) \times C`
+      T((A \times B) \times C);
+      \mathsf{st}_{A \times B,C}]
+    \morphism(2200,500)|m|<0,-500>[
+      T((A \times B) \times C)`
+      T(A \times T(B \times C));
+      T\alpha_{A,B,C}]
+    \efig
+  \end{mathpar}
+\end{definition}
+Adopting strong monads instead of arbitrary ones yields a sound and
+complete model.
+\begin{definition}
+  \label{def:lambdaT-model}
+  A \textbf{$\lambda_T$ model} consists of a cartesian closed category
+  $\cat{C}$ equipped with a strong monad $(T,\eta,\mu)$ on $\cat{C}$.
+\end{definition}
+\noindent
+Finally, we have the following:
+\begin{theorem}[Soundness]
+  \label{thm:soundness}
+  Suppose $(T : \cat{C} \mto \cat{C},\eta,\mu)$ is a $\lambda_T$ model.  Then if $[[G |- t1 :
+      A]]$ and $[[t1 ~> t2]]$, the $[[ [t1] ]] \cong [[ [t2] ]] : [[ [G] ]] \mto [[ [A] ]]$ in $\cat{C}$.
+\end{theorem}
+
+
 % section categorical_model_of_lambdaT (end)
 
 
-\section{Monads are modular, right?}
-\label{sec:monads_are_modular,_right?}
+%% \section{Monads are modular, right?}
+%% \label{sec:monads_are_modular,_right?}
 
-% section monads_are_modular,_right? (end)
+%% % section monads_are_modular,_right? (end)
 
 
 \bibliographystyle{plain} \bibliography{references}

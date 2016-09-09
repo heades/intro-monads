@@ -5,3 +5,6 @@
 *.out
 /#main.tex#
 /.#main.tex
+*-inc.ott
+*-output.tex
+*-inc.tex
