@@ -267,8 +267,11 @@ equational reasoning:
   & = & \mu_{A}(\mu_{\mathcal{P}(A)}(S))\\
 \end{array}
 \]
-Functions with a type of the form $A \mto \mathcal{P}(B)$ have a
-special place in computer science, because they model non-determinism.
+Note that in addition to the previous diagrams we would also need to
+show that $\eta$ and $\mu$ are natural transformations, but we leave
+this to the reader. Functions with a type of the form $A \mto
+\mathcal{P}(B)$ have a special place in computer science, because they
+model non-determinism.
 % section what_is_a_monad_really (end)
 
 \section{Jumping inside a monad}
@@ -284,15 +287,12 @@ be two such categories, but they are related.
 \subsection{The Kleisli category}
 \label{subsec:the_kleisli_category}
 Suppose we have a monad $(T,\eta,\mu)$ on some category $\cat{C}$.
-Then the \textbf{Kleisli category} of the monad $T$, denoted
-$\cat{C}_T$, has as objects the objects of $\cat{C}$, and as morphisms
-all the morphisms of $\cat{C}$ of the form $f : A \mto TB$.
-
-It is common to see the later as being defined as if $f : A \mto TB$
-is a morphism of $\cat{C}$, then $\hat{f} : A \mto B$ is a morphism of
-$\cat{C}_T$.  However, this can often lead to confusion, and so for
-this lecture we will be explicit about the form of $f$, and use the
-former definition.
+The \textbf{Kleisli category} of the monad $T$ is denoted $\cat{C}_T$.
+The objects of $\cat{C}_T$ are the objects of $\cat{C}$, and the
+morphisms of $\cat{C}_T$ from an object $A$ to an object $B$ are the
+morphisms of $\cat{C}$ from $A$ to $TB$.  That is, $\cat{C}_T(A,B) =
+\cat{C}(A,TB)$.  We will denote the morphisms in $\cat{C}_T$ as
+$\hat{f}$.
 
 Before we can do anything we must first show that $\cat{C}_T$ is
 indeed a category.
@@ -316,14 +316,22 @@ indeed a category.
   \efig
   \]
   \noindent
-  \textbf{Composition.} Suppose $f : A \mto TB$ and $g : B \mto TC$
-  are two morphisms in $\cat{C}_T$.  Then their composition is defined
-  by $f;\overline{g}$.  Thus, composition in $\cat{C}_T$ is composition in
-  $\cat{C}$ where the second morphism is lifted.
+  \textbf{Composition.} Suppose $\hat{f} : A \mto B$ and $\hat{g} : B
+  \mto C$ are two morphisms in $\cat{C}_T$.  These are equivalent to
+  the morphisms $f : A \mto TB$ and $g : B \mto TC$ in $\cat{C}$.
+  Then their composition, $\hat{f};\hat{g} : A \mto C$ in $\cat{C}_T$
+  is defined by $f;\overline{g}$ in $\cat{C}$.  Thus, composition in
+  $\cat{C}_T$ is composition in $\cat{C}$ where the second morphism is
+  lifted.
 
   We have to prove that this composition is associative.  Suppose
-  $f : A \mto TB$, $g : B \mto TC$, and $g : C \mto TD$ are morphisms
-  of $\cat{C}_T$.  Then we must show that:
+  $\hat{f} : A \mto B$, $\hat{g} : B \mto C$, and $\hat{h} : C \mto D$
+  are morphisms of $\cat{C}_T$.  These are all equivalent to $f : A
+  \mto TB$, $g : B \mto TC$, and $h : C \mto TD$ from $\cat{C}$.
+
+  \ \\
+  \noindent
+  It suffices to show that:
   \[
   (f;\overline{g});\overline{h} = f;\overline{(g;\overline{h})}
   \]  
@@ -382,12 +390,13 @@ indeed a category.
   \ \\
   \noindent
   \textbf{Identities.} Suppose $A$ is an object of $\cat{C}_T$.  Then
-  we need to show there there exists a morphism $\id_A : A \mto TA$
-  such that for any morphism $f : A \mto TB$ we have
-  $\id_A;\overline{f} = f = f;\overline{\id_B}$.  The only option we
-  have is $\eta_A : A \mto TA$, because it is the only morphism with
-  the required form that we know always exists.  The following
-  commutative diagrams imply our desired property:
+  we need to show there there exists a morphism $\hat{\id}_A : A \mto
+  A$ such that for any morphism $\hat{f} : A \mto B$ we have
+  $\hat{\id}_A;\hat{f} = \hat{f} = \hat{f};\hat{\id_B}$.  The only
+  option we have is $\eta_A : A \mto TA$, because it is the only
+  morphism from $\cat{C}$ with the required form that we know always
+  exists.  Thus, $\hat{\id}_A = \eta_A$.  The following commutative
+  diagrams imply our desired property:
   \[
   \begin{array}{lll}
     \bfig
@@ -666,7 +675,7 @@ with a monad.  Is it enough to simply take a cartesian closed category
 $\cat{C}$ with a monad $(T,\eta,\mu)$ on $\cat{C}$?
 
 Suppose $(\cat{C}, 1, \times, \to)$ is a cartesian closed category,
-and $(T,\eta,\mu)$ is a monad on $\cat{C}$.  Objects are interpreted
+and $(T,\eta,\mu)$ is a monad on $\cat{C}$.  Types are interpreted
 into this model as follows:
 \[
 \begin{array}{lll}
@@ -679,7 +688,7 @@ into this model as follows:
 Contexts $\Gamma = [[x1 : A1]],\ldots,[[xi : Ai]]$ will be interpreted
 into $\cat{C}$ by $[[ [G] ]] = [[ [A1] ]] \times \cdots \times [[ [ Ai
 ] ]]$.  To make the syntax less cluttered we will drop the
-interpretation brackets from types and objects.
+interpretation brackets from the interpretation of types.
 
 We will interpret each typing judgment $[[G |- t : A]]$ as a morphism
 $[[ [G] ]] \mto^{[[ [t] ]]} [[ [A] ]]$ by induction on the form of the
@@ -716,8 +725,10 @@ a strong monad.
   $\mathsf{st}_{A,B} : A \times T B \mto T(A \times B)$ called the
   \textbf{tensorial strength} of the monad.  In addition, the following
   diagrams must commute:
-  \begin{mathpar}
-    \bfig
+  \begin{center}
+    \begin{math}
+      \begin{array}{ccc}
+        \bfig
     \qtriangle|amm|<700,500>[
       1 \times TA`
       T(1 \times A)`
@@ -726,35 +737,34 @@ a strong monad.
       \rho_{TA}`
       T\rho_A]
     \efig
-    \and       
+    & \quad & 
     \bfig
-    \btriangle|maa|/<-``->/<1000,500>[
+    \btriangle|maa|/<-``->/<800,500>[
       A \times TB`
       A \times T^2 B`
       T(A \times TB);
       \id_A \times \mu_B``
       \mathsf{st}_{A,TB}]
 
-    \dtriangle(800,0)|ama|/`<-`->/<1000,500>[
+    \dtriangle(800,0)|ama|/`<-`->/<800,500>[
       T(A \times B)`
       T(A \times TB)`
       T^2(A \times B);`
       \mu_{A \times B}`
       T\mathsf{st}_{A,B}]
-
-    \morphism(-400,500)|a|/->/<2000,0>[
-      A \times TB`
-      T(A \times B);
-      \mathsf{st}_{A,B}]
-
-    \Atriangle(-600,500)|mma|<1000,500>[
+  
+    \Atriangle(0,500)|mma|<800,300>[
       A \times B`
       A \times TB`
       T(A \times B);
       \id_A \times \eta_B`
-      \eta_{A \times B}`]
+      \eta_{A \times B}`
+      \mathsf{st}_{A,B}]
     \efig
-    \and
+      \end{array}
+    \end{math}
+  \end{center}
+  \begin{mathpar}       
     \bfig
     \square|amma|/`->``->/<1000,500>[
       (A \times B) \times C``
