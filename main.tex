@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 
-\title{An introduction to that which shall not be named}
+\title{An introduction to that which shall not be named\footnote{These lecture notes were for the Computational Logic Center Seminar at the University of Iowa.}}
 \author{Harley Eades III\\Computer Science\\Augusta University\\\href{mailto:heades@augusta.edu}{heades@augusta.edu}}
 \date{September 2016}
 
@@ -801,15 +801,165 @@ Finally, we have the following:
   Suppose $(T : \cat{C} \mto \cat{C},\eta,\mu)$ is a $\lambda_T$ model.  Then if $[[G |- t1 :
       A]]$ and $[[t1 ~> t2]]$, the $[[ [t1] ]] \cong [[ [t2] ]] : [[ [G] ]] \mto [[ [A] ]]$ in $\cat{C}$.
 \end{theorem}
-
-
 % section categorical_model_of_lambdaT (end)
 
 
-%% \section{Monads are modular, right?}
-%% \label{sec:monads_are_modular,_right?}
+\section{Monads are modular, right?}
+\label{sec:monads_are_modular,_right?}
 
-%% % section monads_are_modular,_right? (end)
+The most important concept of category theory, logic, and functional
+programming is composition.  In practice, it is very common to need
+several different types of side effects.  Naturally, some programs
+will use different ones, and others may use all of them.  So given
+monads $(T_1,\eta_1,\mu_1)$ and $(T_2,\eta_2,\mu_2)$ on a category
+$\cat{C}$ can we compose these together and obtain a monad
+$(T_3,\eta_3,\mu_3)$ that encompasses the side effects of both $T_1$
+and $T_2$?
+
+One might think that the question is obviously true.  This is category
+theory, right?  Functors compose, and so we should be able to compose
+monads, but in what order?  It turns out that we cannot even define
+join of this composition.  If we take $T_1;T_2 : \cat{C} \mto \cat{C}$
+to be the composition, then notice that we can easily obtain a natural
+transformation $\eta_3 = A \mto^{\eta_2} T_2 A \mto^{\eta_1} T_1(T_2
+A)$, but notice that we cannot define $\mu_3 : T_1(T_2(T_1(T_2 A)))
+\mto T_1(T_2 A)$ in terms of $\mu_1 : T^2_1 \mto T_1$ and $\mu_2 :
+T^2_2 \mto T_2$.  So this will not work.  
+
+Composition of monads has been a hot topic since their conception.  In
+fact, Moggi spent a lot of time thinking about this; see
+\cite{?}. Papers on this concept pop up pretty consistently each year
+since monads where introduced to the functional programming community
+\cite{?}.  However, most of these papers exclude a categorical model.
+This is rather upsetting, because the model allows us to decide on the
+approaches merits.  Monads are a categorical concept after all, and
+when we extend their use we should provide an elegant categorical
+model.
+
+In this section we will cover some of the most popular ways of
+composing monads. We focus on the categorical models, but we will give
+brief descriptions of how these can be added to a functional
+programming language.
+
+\subsection{Distributive Laws}
+\label{subsec:distributive_laws}
+Recall that we were unable to define $\mu_3 : T_1(T_2(T_1(T_2 A)))
+\mto T_1(T_2 A)$ in terms of $\mu_1 : T^2_1 \mto T_1$ and $\mu_2 :
+T^2_2 \mto T_2$.  But, if we could first commute $T_2T_1$ in the
+source of $\mu_3$, then we could.  This is exactly what distributive
+laws give us.
+
+Given two monads $(T_1,\eta_1,\mu_1)$ and $(T_2,\eta_2,\mu_2)$ on a
+category $\cat{C}$, a \textbf{distributive law} of $T_2$ over $T_1$ is
+a natural transformation $\mathsf{dist} : T_1T_2 \mto T_2T_1$
+subject to the following commutative diagrams:
+\begin{center}  
+  \begin{math}
+    \begin{array}{lll}
+      \bfig
+      \qtriangle|amm|<500,800>[
+        T_1`
+        T_1T_2`
+        T_2T_1;
+        T_1\eta_2`
+        \eta_2T_1`
+        \mathsf{dist}]
+      \square(500,0)|amma|/<-`->``<-/<700,800>[
+        T_1T_2`
+        T_1T_2T_2`
+        T_2T_1`
+        T_2T_2T_1;
+        T_1\mu_2`
+        \mathsf{dist}``
+        \mu_2T_1]
+      \morphism(1200,800)|m|<0,-400>[
+        T_1T_2T_2`
+        T_2T_1T_2;
+        \mathsf{dist}T_2]
+      \morphism(1200,400)|m|<0,-400>[
+        T_2T_1T_2`
+        T_2T_2T_1;
+        T_2\mathsf{dist}]
+      \efig
+      & \quad &
+      \bfig
+      \qtriangle|amm|<500,800>[
+        T_2`
+        T_1T_2`
+        T_2T_1;
+        \eta_1T_2`
+        T_2\eta_1`
+        \mathsf{dist}]
+      \square(500,0)|amma|/<-`->``<-/<700,800>[
+        T_1T_2`
+        T_1T_1T_2`
+        T_2T_1`
+        T_2T_1T_1;
+        \mu_1T_2`
+        \mathsf{dist}``
+        T_2\mu_1]
+      \morphism(1200,800)|m|<0,-400>[
+        T_1T_1T_2`
+        T_1T_2T_1;
+        T_1\mathsf{dist}]
+      \morphism(1200,400)|m|<0,-400>[
+        T_1T_2T_1`
+        T_2T_1T_1;
+        \mathsf{dist}T_1]
+      \efig
+    \end{array}
+  \end{math}
+\end{center}
+Distributive laws are due to Beck \cite{Beck:1969}, and were
+extensively studented by Manes and Mulry \cite{Manes:2007,Manes:2008}.
+Please see the latter for further references on the subject.
+
+We now have the following result:
+\begin{theorem}
+  \label{thm:compose_1}
+  Suppose $(T_1,\eta_1,\mu_1)$ and $(T_2,\eta_2,\mu_2)$ are two monads
+  on $\cat{C}$, and $\mathsf{dist} : T_1T_2 \mto T_2T_1$ is a
+  distributive law.  Then the endofunctor $T_2T_1$ is a monad on
+  $\cat{C}$.
+\end{theorem}
+\begin{proof}
+  ...
+\end{proof}
+
+Many concrete monads have the benefit that we can define the
+distributive laws, and hence, can be composed.  As an example suppose
+we wanted to compose the maybe monad and the list monad.  In Haskell,
+we can define the following distributive law\footnote{For the entire implementation please see \url{ (writing \verb!List a!
+instead of \verb![a]! for readability):
+\begin{center}
+  \begin{verbatim}
+    dist :: List (Maybe a) -> Maybe (List a)
+    dist [] = Just []
+    dist (Nothing:xs) = Nothing
+    dist (Just x:xs) = dist xs >>= (\l -> return (x:l)) 
+  \end{verbatim}
+\end{center}
+This definition shows that applying \verb!dist! to a list where every
+element is of the form \verb!Just x! for some \verb!x! of type
+\verb!a! results in \verb!Just l! where \verb!l! contains all of the
+elements like \verb!x!.  If \verb!Nothing! ever appears then
+\verb!dist! returns \verb!Nothing!.  This fits well with how the maybe
+monad operates.
+
+Using \verb!dist! we can define the monad \verb!Maybe (List a)!:
+\begin{center}
+  \begin{verbatim}
+    returnML :: a -> Maybe (List a)
+    joinML :: Maybe (List (Maybe (List a))) -> Maybe (List a)
+    bindML :: Maybe (List a) -> (a -> Maybe (List a)) -> Maybe (List a)
+  \end{verbatim}
+\end{center}
+There are many more example use cases.  See the work of Jones and
+Duponcheel \cite{Jones:1993} for some variations of this type of
+composition in Haskell.
+% subsection distributive_laws (end)
+
+% section monads_are_modular,_right? (end)
 
 
 \bibliographystyle{plain} \bibliography{references}
