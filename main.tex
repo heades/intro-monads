@@ -9,6 +9,7 @@
 \usepackage{mathpartir}
 \usepackage{mdframed}           % For the boxes around the systems.
 \usepackage[barr]{xy}
+\usepackage{fullpage}
 \input{type-theory_inc}
 %% This renames Barr's \to to \mto.  This allows us to use \to for imp
 %% and \mto for a inline morphism.
@@ -923,14 +924,218 @@ We now have the following result:
   $\cat{C}$.
 \end{theorem}
 \begin{proof}
-  ...
+  It suffices to define $\eta_3 : A \mto T_2T_1A$ and $\mu_3 :
+  T_2T_1T_2T_1 A \mto T_2T_1 A$, and show they satisfy the monad laws
+  (Definition~\ref{def:monad}).
+
+  \ \\ \noindent  
+  We have the following definitions:
+  \[
+  \begin{array}{lll}
+    \eta_3 = A \mto^{\eta_2} T_2A \mto^{T_2\eta_1} T_2T_1A\\
+     \mu_3 = T_2T_1T_2T_1A \mto^{T_2\mathsf{dist}_{T_1A}} T^2_2T^2_1 A \mto^{T^2_2\mu_1} T^2_2T_1A \mto^{\mu_2} T_2T_1A
+  \end{array}
+  \]
+  Now we show that these definitions satisfy the monad laws:
+  \begin{itemize}
+  \item[] Case.
+    \[
+    \bfig
+    \Square|amma|[
+      (T_2T_1)^3 A`
+      (T_2T_1)^2A`
+      (T_2T_1)^2A`
+      T_2T_1A;
+      T_2T_1\mu_3`
+      \mu_3T_2T_1`
+      \mu_3`
+      \mu_3]
+    \efig
+    \]
+    This case follows from the fact that the following diagram
+    commutes:
+    \begin{center}
+      \begin{math}
+        \bfig
+        \square|amma|<1100,500>[
+          T_2T_1T_2T_1T_2T_1A`
+          T_2T_1T^2_2T^2_1A`
+          T^2_2T^2_1T_2T_1A`
+          T^2_2T_1T_2T^2_1A;
+          T_2T_1T_2\mathsf{dist}`
+          T_2\mathsf{dist}T_1T_2T_1`
+          T_2\mathsf{dist}T_2T^2_1`
+          T^2_2T_1\mathsf{dist}T_1]
+
+        \square(1100,0)|amma|<1100,500>[
+          T_2T_1T^2_2T^2_1A`
+          T_2T_1T^2_2T_1A`
+          T^2_2T_1T_2T^2_1A`
+          T^2_2T_1T_2T_1A;
+          T_2T_1T^2_2\mu_1`
+          T_2\mathsf{dist}T_2T^2_1`
+          T_2\mathsf{dist}T_2T_1`
+          T^2_2T_1T_2\mu_1]
+
+        \square(1100,-500)|amma|<1100,500>[
+          T^2_2T_1T_2T^2_1A`
+          T^2_2T_1T_2T_1A`
+          T^3_2T^3_1A`
+          T^3_2T^2_1A;
+          T^2_2T_1T_2\mu_1`
+          T^2_2\mathsf{dist}T^2_1`
+          T_2\mathsf{dist}T_1`
+          T^3_2T_1\mu_1]
+
+        \square(1100,-1000)|amma|<1100,500>[
+          T^3_2T^3_1A`
+          T^3_2T^2_1A`
+          T^3_2T^2_1A`
+          T^3_2T_1A;
+          T^3_2T_1\mu_1`
+          T^3_2\mu_1T_1`
+          T^3_2\mu_1`
+          T^3_2\mu_1]
+
+        \square(1100,-1500)|amma|<1100,500>[
+          T^3_2T^2_1A`
+          T^3_2T_1A`
+          T^2_2T^2_1A`
+          T^2_2T_1A;
+          T^3_2\mu_1`
+          \mu_2T_2T^2_1`
+          \mu_2T_2T_1`
+          T^2_2\mu_1]
+
+        \square(0,-1500)|amma|<1100,500>[
+          T^2_2T_1T_2T_1A`
+          T^3_2T^2_1A`
+          T_2T_1T_2T_1A`
+          T^2_2T^2_1A;
+          T^2_2\mathsf{dist}T_1`
+          \mu_2T_1T_2T_1`
+          \mu_2T_2T^2_1`
+          T_2\mathsf{dist}T_1]
+
+        \morphism(0,0)|m|<0,-1000>[
+          T^2_2T^2_1T_2T_1A`
+          T^2_2T_1T_2T_1A;
+          T^2_2\mu_1T_2T_1]
+
+        \square(2200,-1000)|amma|<1100,500>[
+          T^3_2T^2_1A`
+          T^2_2T^2_1A`
+          T^3_2T_1A`
+          T^2_2T_1A;
+          T_2\mu_2T^2_1`
+          T^3_2\mu_1`
+          T^2_2\mu_1`
+          T_2\mu_2T_1]
+
+        \square(2200,-1500)|amma|<1100,500>[
+          T^3_2T_1A`
+          T^2_2T_1A`
+          T^2_2T_1A`
+          T_2T_1A;
+          T_2\mu_2T_1`
+          \mu_2T_2T_1`
+          \mu_2T_1`
+          \mu_2T_1]
+
+        \qtriangle(2200,-500)|amm|/->``->/<1100,1000>[
+          T_2T_1T^2_2T_1A`
+          T_2T_1T_2T_1A`
+          T^2_2T^2_1A;
+          T_2T_1\mu_2``
+          T_2\mathsf{dist}T_1]
+
+        \place(550,250)[(1)]
+        \place(1650,250)[(2)]
+        \place(2750,0)[(3)]
+        \place(550,-500)[(4)]
+        \place(1650,-250)[(5)]
+        \place(1650,-750)[(6)]
+        \place(2750,-750)[(7)]
+        \place(550,-1250)[(8)]
+        \place(1650,-1250)[(9)]
+        \place(2750,-1250)[(10)]
+        \efig
+      \end{math}
+    \end{center}
+    Diagrams one, two, and five commute by naturality of
+    $\mathsf{dist}$, diagrams seven, eight, and nine commute by
+    naturality of $\mu_2$, diagrams six and ten commute by the monad
+    laws, and diagrams three and four commute by the distributive
+    laws.
+
+  \item[] Case.
+    \[
+    \bfig
+    \qtriangle|amm|/->`=`->/<800,500>[
+      T_2T_1A`
+      (T_2T_1)^2A`
+      T_2T_1A;
+      \eta_3``
+      \mu_3]
+    \efig
+    \]
+    This diagram commutes because the following one does:
+    \begin{center}
+      \begin{math}
+        \bfig
+        \qtriangle|amm|/->`->`->/<1000,500>[
+            T^2_2T_1A`
+            T_2T_1T_2T_1A`
+            T^2_2T^2_1A;
+            T_2\eta_1T_2T_1`
+            T^2_2\eta_1T_1`
+            T_2\mathsf{dist}T_1]
+
+        \dtriangle(0,-500)|mma|/`->`=/<1000,500>[
+          T^2_2T^2_1A`
+          T^2_2T_1A`
+          T^2_2T_1A;`
+          T^2_2\mu_1`]
+
+        \square(-1000,-500)|amma|/->`=`=`<-/<1000,1000>[
+          T_2T_1A`
+          T^2_2T_1A`
+          T_2T_1A`
+          T^2_2T_1A;
+          \eta_2T_2T_1```
+          \mu_2T_1]
+        \efig
+      \end{math}
+    \end{center}
+
+    The left and the right lower squares commute by the monad laws,
+    and the right triangle commutes by the distributive laws.
+
+  \item[] Case.
+    \[
+    \bfig
+    \btriangle|mma|/->`=`->/<800,500>[
+      T_2T_1A`
+      (T_2T_1)^2A`
+      T_2T_1A;
+      T_2T_1\eta_3``
+      \mu_3]
+    \efig
+    \]
+
+    This is case is similar to the previous one.
+
+  \end{itemize}
+
 \end{proof}
 
 Many concrete monads have the benefit that we can define the
 distributive laws, and hence, can be composed.  As an example suppose
 we wanted to compose the maybe monad and the list monad.  In Haskell,
-we can define the following distributive law\footnote{For the entire implementation please see \url{ (writing \verb!List a!
-instead of \verb![a]! for readability):
+we can define the following distributive law\footnote{For the entire
+  implementation please see
+  \url{https://github.com/heades/intro-monads/blob/master/MaybeList.hs}.}
+(writing \verb!List a!  instead of \verb![a]! for readability):
 \begin{center}
   \begin{verbatim}
     dist :: List (Maybe a) -> Maybe (List a)
@@ -948,6 +1153,7 @@ monad operates.
 
 Using \verb!dist! we can define the monad \verb!Maybe (List a)!:
 \begin{center}
+  \small
   \begin{verbatim}
     returnML :: a -> Maybe (List a)
     joinML :: Maybe (List (Maybe (List a))) -> Maybe (List a)
@@ -957,7 +1163,22 @@ Using \verb!dist! we can define the monad \verb!Maybe (List a)!:
 There are many more example use cases.  See the work of Jones and
 Duponcheel \cite{Jones:1993} for some variations of this type of
 composition in Haskell.
+
+One of the negatives of distributive laws is that a distributive law
+may not be definable for a particular pair of monads.  For example, in
+Haskell it is not possible to define a distributive law between the
+I/O monad and the state monad.  
 % subsection distributive_laws (end)
+
+\subsection{Coproducts}
+\label{subsec:coproducts}
+
+% subsection coproducts (end)
+
+\subsection{Monad Transformers}
+\label{subsec:monad_transformers}
+
+% subsection monad_transformers (end)
 
 % section monads_are_modular,_right? (end)
 
