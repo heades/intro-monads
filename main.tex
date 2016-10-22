@@ -121,14 +121,14 @@ input type of \verb!g!.  Thus, we must come up with a new type of
 composition.  To accomplish this in Haskell we first need a new
 operator called \textit{bind} which is denoted by
 \verb!>>= :: m b -> (b -> m c) -> m c!.  Then composition of \verb!f!
-and \verb!g! can be defined by
+and \verb!g! can be defined by\\
 \verb!\x -> ((f x) >>= g) :: a -> m c!.
 
 So we have a composition for functions whose type has the shape
 \verb!a -> m b!, but any self respecting composition has an identity.
 This implies that we need some function \verb!id :: a -> m a!, such
 that, $\verb!(\x -> (f x) >>= id)! = \verb!f!$ and
-$\verb!(\x -> (id x) >>= g)! = \verb!g!$.  This identity is denoted by
+$\verb!(\x -> (id x) >>= g)! = \verb!g!$.  This identity is denoted by\\
 \verb!return :: a -> m a! in Haskell, and has to be taken as
 additional structure, because it cannot be defined in terms of bind.
 
