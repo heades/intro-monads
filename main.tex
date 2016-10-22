@@ -829,9 +829,9 @@ T^2_2 \mto T_2$.  So this will not work.
 
 Composition of monads has been a hot topic since their conception.  In
 fact, Moggi spent a lot of time thinking about this; see
-\cite{?}. Papers on this concept pop up pretty consistently each year
-since monads where introduced to the functional programming community
-\cite{?}.  However, most of these papers exclude a categorical model.
+\cite{Moggi:1989a}. Papers on this concept pop up pretty consistently
+each year since monads where introduced to the functional programming
+community.  However, most of these papers exclude a categorical model.
 This is rather upsetting, because the model allows us to decide on the
 approaches merits.  Monads are a categorical concept after all, and
 when we extend their use we should provide an elegant categorical
@@ -1170,15 +1170,108 @@ Haskell it is not possible to define a distributive law between the
 I/O monad and the state monad.  
 % subsection distributive_laws (end)
 
-\subsection{Coproducts}
-\label{subsec:coproducts}
-
-% subsection coproducts (end)
-
 \subsection{Monad Transformers}
 \label{subsec:monad_transformers}
 
+Moggi \cite{Moggi:1989a} was perhaps the first to realize that the
+success of the monadic approach depends on the need for monadic models
+to be modular.  So he spent quite sometime studying a means of
+composing monads called \textbf{monad transformers.}
+
+Suppose $\cat{C}$ is a category with products.  Then define the
+category $\mathsf{Mon}(\cat{C})$ to have as objects strong monads
+(Definition~\ref{def:strong-monad}) and as morphisms strong-monad
+morphisms.
+
+\begin{definition}
+  \label{def:strong-monad-morphism}
+  A \textbf{strong-monad morphism} is a natural transformation,
+  $\alpha : T_1 \mto T_2$, where $(T_1,\eta_1,\mu_1,\mathsf{st}_1)$
+  and $(T_2,\eta_2,\mu_2,\mathsf{st}_2)$ are strong monads.
+  Furthermore, the following diagrams must commute:
+  \begin{center}
+    \begin{math}
+      \begin{array}{cccc}
+      \bfig
+      \square|amma|/->`=`->`->/<500,500>[
+        A`
+        T_1A`
+        A`
+        T_2A;
+        \eta_1``
+        \alpha_A`
+        \eta_2]
+      \square(500,0)|amma|/<-`->`->`<-/<500,500>[
+        T_1A`
+        T^2_1A`
+        T_2A`
+        T^2_2A;
+        \mu_1`
+        \alpha_A`
+        (\alpha;\alpha)_A`
+        \mu_2]
+      \efig
+      & \quad &
+      \bfig
+      \square|amma|<1000,500>[
+        A \times T_1B`
+        T_1(A \times B)`
+        A \times T_2B`
+        T_2(A \times B);
+        \mathsf{st}_1`
+        \id_A \times \alpha_B`
+        \alpha_{A \times B}`
+        \mathsf{st}_2]
+      \efig
+    \end{array}
+    \end{math}
+  \end{center}
+\end{definition}
+\noindent
+Now a \textbf{monad transformer} is an endofunctor in $\mathsf{Mon}(\cat{C})$.
+
+Consider the following example due to Moggi \cite{Moggi:1989a}.  Given
+a monad $(T, \eta, \mu, \mathsf{st})$ over a category $\cat{C}$ with
+products and coproducts, then the monad $T_E$ of
+$T$-\textbf{computations with exceptions} is defined as follows:
+\begin{itemize}
+\item $T_E(A) = T(A + E)$
+\item $\eta^E = \mathsf{in}_l;\eta_{A+E}$
+\item $\mu^E = \overline{[\mathsf{id}_{T(A+E)},\mathsf{in}_r;\eta_{A+E}]}$
+\end{itemize}
+In addition, a monad morphism $\alpha : T' \mto T$ induces a monad
+morphism $\sigma = \alpha_{A+E} : S_E \mto T_E$.  Finally, for every
+monad $(T, \eta, \mu, \mathsf{st})$ there are two monad morphism
+$\eta_E : T \mto T_E$ and $\mu_E : {T_E}_E \mto T_E$ making monad
+transformers monads in the category $\mathsf{Mon}(\cat{C})$.
+
+As presented here monad transformers are Moggi's monad constructors
+\cite{Moggi:1989a}, but in practice they were found to not allow for
+many commonly used monads to be composed. Liang et
+al. \cite{Liang:1995} extended the approach arriving at a more general
+notion of monad transformer that has been adopted in Haskell.
+However, this improved the practical side, but without an elegant
+categorical model.  In fact, to the knowledge of the author the only
+account of a categorical semantics for the monad transformers in
+Haskell is detailed in the note by Oleksandr Manzyuk
+\cite{Manzyu:2012}, but it is very ad hoc.
 % subsection monad_transformers (end)
+
+\subsection{Coproducts}
+\label{subsec:coproducts}
+Distributive laws nor monad transformers are general solutions to the
+composition of monads problem.  Thus, the question is still very much
+open. A more recent approach that is more general than both
+distributive laws and monads transformers which is based in category
+theory was proposed by L\"uth and Ghani \cite{Luth:2002}.  In fact,
+distributive laws arrive as special cases of their model.
+
+The main idea is when given two monads $(T_1, \eta_1, \mu_1)$ and
+$(T_2, \eta_2, \mu_2)$ one can construct the coproduct monad $(T_1 +
+T_2, \eta_+, \mu_+)$ that encompasses the side effects of both monads.
+The general construction turns out to be quite complex.  The
+interested reader should see their paper \cite{Luth:2002}.
+% subsection coproducts (end)
 
 % section monads_are_modular,_right? (end)
 
