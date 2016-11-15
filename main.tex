@@ -281,7 +281,7 @@ model non-determinism.
 Suppose $(T : \cat{C} \mto \cat{C},\eta,\mu)$ is a monad.  Then we can
 think of $\cat{C}$ as the pure world, and the world inside $T$ as the
 impure world, or the universe of computations.  Given such a monad can
-we define exactly what this impure world is?  In turns out we can by
+we define exactly what this impure world is?  It turns out we can by
 constructing the underlying category of the monad.  There happens to
 be two such categories, but they are related.
 
@@ -1272,6 +1272,37 @@ T_2, \eta_+, \mu_+)$ that encompasses the side effects of both monads.
 The general construction turns out to be quite complex.  The
 interested reader should see their paper \cite{Luth:2002}.
 % subsection coproducts (end)
+
+\subsection{Adjoints}
+\label{subsec:adjoints}
+As we can see monads really do not compose, and in order to get them
+to compose extraordinary measures must be taken.  However, there is an
+alternate view of monads that one can use to obtain compositionality.
+First, we need a well known result that goes back to Eilenberg-Moore
+in 1965 and to MacLane's ``Categories for a Working Mathematician''
+\cite{MacLane:1971}.
+
+Suppose $(T, \eta,\mu)$ is a monad on the category $C$.  Then notice
+that there is a functor $F_T : \cat{C} \mto \cat{C}^T$ which takes an
+object $A$ of $\cat{C}$ to the $T$-algebra $(TA,\mu_A)$, and a
+morphism $f : A \mto B$ of $\cat{C}$ to the morphism $Tf : (TA, \mu_A)
+\mto (TB,\mu_B)$; the monad laws imply $\mu$ is a structure map for
+objects of the form $T(-)$, and naturality of $\mu$ implies that $Tf$
+is a $T$-algebra morphism. It is easy to see that $F_T$ is a functor,
+because $T$ is. This is known as the \textbf{free functor} of the
+monad $T$.  There also happens to be a functor $U_T : \cat{C}^T \mto
+\cat{C}$ which takes objects $(A,h_A)$ of $\cat{C}^T$ to an object $A$
+of $\cat{C}$, and morphisms $f : (A,h_A) \mto (B,h_B)$ to $f : A \mto
+B$.  Clearly, $U_T$ is a functor.  It is known as the
+\textbf{forgetful functor}.
+
+We can now define a natural transformation $\varepsilon : FU \mto
+\mathsf{Id}$, where $\mathsf{Id} : \cat{C} \mto \cat{C}$ is the
+identity functor.  The functor $FU : \cat{C}^T \mto \cat{C}^T$
+transforms objects $(A,h_A)$ into $FU(A,h_A) = FA =
+(TA,\mu_A)$. Hence, the components of $\varepsilon$ must be defined by
+$\varepsilon_{(A,h_A)} = h_A : (TA, \mu_A) \mto (A, h_A)$.
+% subsection adjoints (end)
 
 % section monads_are_modular,_right? (end)
 
