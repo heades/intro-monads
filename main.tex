@@ -604,7 +604,82 @@ The benefit of the Eilenberg-Moore category is that it is often easier
 to prove properties about it than the Kleisli category.  Since the
 Kleisli category is a full subcategory of the Eilenberg-Moore category
 any property that holds on the Eilenberg-Moore category also holds for
-the Kleisli category.  
+the Kleisli category.
+
+Using the Eilenberg-Moore category it is possible to decompose a monad
+into an adjunction.  Suppose $(T, \eta,\mu)$ is a monad on the
+category $C$.  Then notice that there is a functor $F_T : \cat{C} \mto
+\cat{C}^T$ which takes an object $A$ of $\cat{C}$ to the $T$-algebra
+$(TA,\mu_A)$, and a morphism $f : A \mto B$ of $\cat{C}$ to the
+morphism $Tf : (TA, \mu_A) \mto (TB,\mu_B)$; the monad laws imply
+$\mu$ is a structure map for objects of the form $T(-)$, and
+naturality of $\mu$ implies that $Tf$ is a $T$-algebra morphism. It is
+easy to see that $F_T$ is a functor, because $T$ is. This is known as
+the \textbf{free functor} of the monad $T$.  There also happens to be
+a functor $U_T : \cat{C}^T \mto \cat{C}$ which takes objects $(A,h_A)$
+of $\cat{C}^T$ to an object $A$ of $\cat{C}$, and morphisms $f :
+(A,h_A) \mto (B,h_B)$ to $f : A \mto B$.  Clearly, $U_T$ is a functor.
+It is known as the \textbf{forgetful functor}.
+
+We can now define a natural transformation $\varepsilon^T : FU \mto
+\mathsf{Id}$, where $\mathsf{Id} : \cat{C} \mto \cat{C}$ is the
+identity functor.  The functor $FU : \cat{C}^T \mto \cat{C}^T$
+transforms objects $(A,h_A)$ into $FU(A,h_A) = FA =
+(TA,\mu_A)$. Hence, the components of $\varepsilon^T$ must be defined
+by $\varepsilon^T_{(A,h_A)} = h_A : (TA, \mu_A) \mto (A, h_A)$; the
+conditions on the structure map insure this is indeed a $T$-algebra
+morphism.  Naturality holds because $\varepsilon^T_{(A,h_A)}$ is the
+structure map of $A$.  We also have a natural transformation $\eta^T :
+\mathsf{Id} \mto UF$.  The functor $UF : \cat{C} \mto \cat{C}$ is
+defined by $UFA = U(TA,\mu_A) = TA$.  Thus, the components of $\eta^T$
+are defined by $\eta^T_A = \eta_A : A \mto TA$.  Clearly, $\eta^T$ is
+natural, because $\eta_A$ is.
+
+These two natural transformations are related by the following diagrams:
+\begin{center}
+  \begin{math}
+    \begin{array}{lll}
+      \bfig
+      \qtriangle|amm|/->`=`->/<700,500>[
+        FA`
+        FUFA`
+        FA;
+        F\eta^T_A``
+        \varepsilon^T_{FA}]
+      \efig
+      & \quad &
+      \bfig
+      \qtriangle|amm|/->`=`->/<950,500>[
+        U(A,h_A)`
+        UFU(A,h_A)`
+        U(A,h_A);
+        \eta^T_{U(A,h_A)}``
+        U\varepsilon^T_{(A,h_A)}]
+      \efig
+    \end{array}
+  \end{math}
+\end{center}
+In the left diagram $F\eta^T_A = T\eta_A$ and $\varepsilon^T_{FA} =
+\mu_A$, and thus, that diagram is equivalent to one of the monad laws
+(Definition~\ref{def:monad}).  In the right diagram $\eta^T_{U(A,h_A)}
+= \eta_A$ and $U\varepsilon^T_{(A,h_A)} = h_A$, and thus, this diagram
+becomes one of the conditions of the structural map.
+
+This structure implies that we have an adjunction:
+\begin{center}
+  \begin{math}
+    \bfig
+    %% \Loop(0,0)\cat{C}(ur,ul)_T
+    \morphism(0,0)|a|/{@{>}@/^1.5em/}/<900,0>[\cat{C}`\cat{C}^T;F]
+    \morphism(0,0)|b|/{@{<-}@/_1.5em/}/<900,0>[\cat{C}`\cat{C}^T;U]
+    \place(450,0)[\perp]
+    \efig
+  \end{math}
+\end{center}
+The symbol $\perp$ indicates that the left adjoint is $F$ and the
+right $G$ which is usually denoted $F \dashv G$.  Finally, it is easy
+to see that $T = UF : \cat{C} \mto \cat{C}$.  A similar construction
+can be done using the Kleisli category.
 % subsection the_eilenberg-moore_category (end)
 
 % section jumping_inside_a_monad (end)
@@ -1272,38 +1347,6 @@ T_2, \eta_+, \mu_+)$ that encompasses the side effects of both monads.
 The general construction turns out to be quite complex.  The
 interested reader should see their paper \cite{Luth:2002}.
 % subsection coproducts (end)
-
-\subsection{Adjoints}
-\label{subsec:adjoints}
-As we can see monads really do not compose, and in order to get them
-to compose extraordinary measures must be taken.  However, there is an
-alternate view of monads that one can use to obtain compositionality.
-First, we need a well known result that goes back to Eilenberg-Moore
-in 1965 and to MacLane's ``Categories for a Working Mathematician''
-\cite{MacLane:1971}.
-
-Suppose $(T, \eta,\mu)$ is a monad on the category $C$.  Then notice
-that there is a functor $F_T : \cat{C} \mto \cat{C}^T$ which takes an
-object $A$ of $\cat{C}$ to the $T$-algebra $(TA,\mu_A)$, and a
-morphism $f : A \mto B$ of $\cat{C}$ to the morphism $Tf : (TA, \mu_A)
-\mto (TB,\mu_B)$; the monad laws imply $\mu$ is a structure map for
-objects of the form $T(-)$, and naturality of $\mu$ implies that $Tf$
-is a $T$-algebra morphism. It is easy to see that $F_T$ is a functor,
-because $T$ is. This is known as the \textbf{free functor} of the
-monad $T$.  There also happens to be a functor $U_T : \cat{C}^T \mto
-\cat{C}$ which takes objects $(A,h_A)$ of $\cat{C}^T$ to an object $A$
-of $\cat{C}$, and morphisms $f : (A,h_A) \mto (B,h_B)$ to $f : A \mto
-B$.  Clearly, $U_T$ is a functor.  It is known as the
-\textbf{forgetful functor}.
-
-We can now define a natural transformation $\varepsilon : FU \mto
-\mathsf{Id}$, where $\mathsf{Id} : \cat{C} \mto \cat{C}$ is the
-identity functor.  The functor $FU : \cat{C}^T \mto \cat{C}^T$
-transforms objects $(A,h_A)$ into $FU(A,h_A) = FA =
-(TA,\mu_A)$. Hence, the components of $\varepsilon$ must be defined by
-$\varepsilon_{(A,h_A)} = h_A : (TA, \mu_A) \mto (A, h_A)$.
-% subsection adjoints (end)
-
 % section monads_are_modular,_right? (end)
 
 
