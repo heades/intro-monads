@@ -3,7 +3,6 @@
 
 \title{An introduction to that which shall not be named}
 \author{Harley Eades III\\Computer Science\\Augusta University\\\href{mailto:heades@augusta.edu}{heades@augusta.edu}}
-\date{September 2016}
 
 \usepackage{amsthm, amsmath, amssymb}
 \usepackage{mathpartir}
@@ -1024,86 +1023,17 @@ Now consider the rule $T_e$, and suppose we have morphisms $[[t1]] :
 We are expecting to Kleisli lift $[[t2]]$ to $\overline{t_2} = [[(T
     t2)]];\mu_B : T ([[G]] \times [[A]]) \mto T [[B]]$, and then
 compose $\langle \id_{[[G]]} , [[t1]] \rangle : [[G]] \mto [[G]]
-\times [[T A]]$ with $\overline{t_2}$, but the types do not match!  If
-we had a natural transformation $\mathsf{st}_{A,B} : A \times T B \mto
-T(A \times B)$ then we could finish the job by interpreting
-$[[G |- let x <- t1 in t2 : T B]]$ by
-$\langle \id_{[[G]]} , [[t1]] \rangle;\mathsf{st}_{[[G]],[[A]]};\overline{t_2} : [[G]] \mto [[T B]]$.
-Therefore, an arbitrary monad does not have enough structure to model
-the bind rule in the presence of multiple hypotheses.  Instead we need
-a strong monad.
+\times [[T A]]$ with $\overline{t_2}$, but the types do not match!  We
+must use tensorial strength, $\mathsf{st}_{A,B} : A \times T B \mto
+T(A \times B)$, to obtain the interpretation $[[G |- let x <- t1 in t2
+    : T B]] = \langle \id_{[[G]]} , [[t1]]
+\rangle;\mathsf{st}_{[[G]],[[A]]};\overline{t_2} : [[G]] \mto [[T
+    B]]$.  Therefore, an arbitrary monad does not have enough
+structure to model the bind rule in the presence of multiple
+hypotheses.  Instead we need a strong monad, but this is not
+surprising since we need strength in order to obtain products in the
+Kleisli category of a monad.
 
-\begin{definition}
-  \label{def:strong-monad}
-  A monad $(T,\eta,\mu)$ on a category $\cat{C}$ with all finite
-  products is \textbf{strong} if there exists a natural transformation
-  $\mathsf{st}_{A,B} : A \times T B \mto T(A \times B)$ called the
-  \textbf{tensorial strength} of the monad.  In addition, the following
-  diagrams must commute:
-  \begin{center}
-    \begin{math}
-      \begin{array}{ccc}
-        \bfig
-    \qtriangle|amm|<700,500>[
-      1 \times TA`
-      T(1 \times A)`
-      TA;
-      \mathsf{st}_{1,A}`
-      \rho_{TA}`
-      T\rho_A]
-    \efig
-    & \quad & 
-    \bfig
-    \btriangle|maa|/<-``->/<800,500>[
-      A \times TB`
-      A \times T^2 B`
-      T(A \times TB);
-      \id_A \times \mu_B``
-      \mathsf{st}_{A,TB}]
-
-    \dtriangle(800,0)|ama|/`<-`->/<800,500>[
-      T(A \times B)`
-      T(A \times TB)`
-      T^2(A \times B);`
-      \mu_{A \times B}`
-      T\mathsf{st}_{A,B}]
-  
-    \Atriangle(0,500)|mma|<800,300>[
-      A \times B`
-      A \times TB`
-      T(A \times B);
-      \id_A \times \eta_B`
-      \eta_{A \times B}`
-      \mathsf{st}_{A,B}]
-    \efig
-      \end{array}
-    \end{math}
-  \end{center}
-  \begin{mathpar}       
-    \bfig
-    \square|amma|/`->``->/<1000,500>[
-      (A \times B) \times C``
-      A \times (B \times C)`
-      A \times T(B \times C);`
-      \alpha_{A,B,C}``
-      \id_A \times \mathsf{st}_{B,C}]
-    \morphism(1000,0)<1200,0>[
-      A \times T(B \times C)`
-      T(A \times T(B \times C));
-      \mathsf{st}_{A,B \times C}]
-    \morphism(0,500)<2200,0>[
-      (A \times B) \times C`
-      T((A \times B) \times C);
-      \mathsf{st}_{A \times B,C}]
-    \morphism(2200,500)|m|<0,-500>[
-      T((A \times B) \times C)`
-      T(A \times T(B \times C));
-      T\alpha_{A,B,C}]
-    \efig
-  \end{mathpar}
-\end{definition}
-Adopting strong monads instead of arbitrary ones yields a sound and
-complete model.
 \begin{definition}
   \label{def:lambdaT-model}
   A \textbf{$\lambda_T$ model} consists of a cartesian closed category
