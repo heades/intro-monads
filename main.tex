@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 
-\title{An introduction to that which shall not be named\footnote{These lecture notes were for the Computational Logic Center Seminar at the University of Iowa.}}
+\title{An introduction to that which shall not be named}
 \author{Harley Eades III\\Computer Science\\Augusta University\\\href{mailto:heades@augusta.edu}{heades@augusta.edu}}
 \date{September 2016}
 
@@ -605,7 +605,10 @@ to prove properties about it than the Kleisli category.  Since the
 Kleisli category is a full subcategory of the Eilenberg-Moore category
 any property that holds on the Eilenberg-Moore category also holds for
 the Kleisli category.
+% subsection the_eilenberg-moore_category (end)
 
+\subsection{Decomposing Monads into Adjunctions}
+\label{subsec:decomposing_monads_into_adjunctions}
 Using the Eilenberg-Moore category it is possible to decompose a monad
 into an adjunction.  Suppose $(T, \eta,\mu)$ is a monad on the
 category $C$.  Then notice that there is a functor $F_T : \cat{C} \mto
@@ -680,8 +683,244 @@ The symbol $\perp$ indicates that the left adjoint is $F$ and the
 right $G$ which is usually denoted $F \dashv G$.  Finally, it is easy
 to see that $T = UF : \cat{C} \mto \cat{C}$.  A similar construction
 can be done using the Kleisli category.
-% subsection the_eilenberg-moore_category (end)
+% subsection decomposing_monads_into_adjunctions (end)
 
+\subsection{What properties lift to the Kleisli and Eilenberg-Moore Categories?}
+\label{subsec:what_properties_lift_to_the_kleisli_and_eilenberg-moore_categories?}
+Given our goal is to model computation inside the Kleisli and
+Eilenberg-Moore categories a natural question is what properties of
+$\cat{C}$ lift to the Kleisli and Eilenberg-Moore categories of a
+monad $(T, \eta, \mu)$?
+
+\textbf{Colimits.} In the previous section we showed that there are
+two adjunction: $\cat{C} : F_K \dashv U_K : \cat{C}_T$ and $\cat{C} :
+F_E \dashv U_E : \cat{C}^T$.  Now since there is a left adjoint
+between $\cat{C}$ and both $\cat{C}_T$ and $\cat{C}^T$, and we know
+left adjoints preserve all colimits \cite{MacLane:1971}, then if
+$\cat{C}$ has a colimit, then both $\cat{C}_T$ and $\cat{C}^T$ have
+the same colimit.
+
+\textbf{Limits.}  In general if $\cat{C}$ has a limit, then
+$\cat{C}_T$ and $\cat{C}^T$ do not necessarily have the same limit.
+We call a morphism $f = f';\eta_B : A \mto TB$ for some $f' : A \mto
+B$ in $\cat{C}$ a \emph{pure morphism}.  We can think of pure
+morphisms as never using any of the monadic features given by $T$.
+One might think that perhaps limits in $\cat{C}$ will lift to limits
+in $\cat{C}_T$ and $\cat{C}_T$ on pure morphisms, but unfortunately
+this is not the case.  However, something can still be said.
+
+We turn our attention to the Kleisli category for a monad $(T, \eta,
+\mu)$ on $\cat{C}$. It turns out that if $\cat{C}$ has a terminal
+object or equalizers, then $\cat{C}_T$ does as well for pure
+morphisms.  Suppose $\cat{C}$ has a terminal object, $1$, where we
+denote the terminal objects universal map by $\mathsf{triv}_A : A \mto
+1$.  Then we will show that $T1$ is terminal in $\cat{C}_T$.  First,
+define $\hat{\mathsf{triv}_A} = \mathsf{triv}_A;\eta_1 : A \mto T1$.
+Suppose we have a second pure morphism $\hat{g} = g;\eta_A : A \mto
+T1$, then $\hat{\mathsf{triv}_A} = \hat{g}$, because $\mathsf{triv}_A$
+is universal in $\cat{C}$, and hence, is unique, thus, $g =
+\mathsf{triv}_A$.
+
+Now suppose $\cat{C}$ has equalizers and $(E, e : X \mto A)$ is an
+arbitrary equalizer.  Then we will show that $(E, e;\eta_A : X \mto
+TA)$ is an equalizer in $\cat{C}_T$ for pure morphisms.  Consider the
+Kleisli composition of $e;\eta_A : X \mto TA$ and $\hat{f},\hat{g} : A
+\two TB$ where $\hat{f}$ and $\hat{g}$ are pure morphisms in
+$\cat{C}_T$:
+\begin{center}
+  \begin{math}
+    X \mto^{e} A \mto^{\eta_A} TA \two^{Tf}_{Tg} TB \two^{T\eta_B}_{T\eta_B} T^2B \mto^{\mu_B} TB
+  \end{math}
+\end{center}
+This can be simplified to the following using the monad laws:
+\begin{center}
+  \begin{math}
+    X \mto^{e} A \mto^{\eta_A} TA \two^{Tf}_{Tg} TB
+  \end{math}
+\end{center}
+Then we may commute $\eta_A$ with $Tf$ and $Tg$ using naturality:
+\begin{center}
+  \begin{math}
+    X \mto^{e} A \two^{f}_{g} B \mto^{\eta_A} TB
+  \end{math}
+\end{center}
+Finally, it is easy to see that $e;f;\eta_A = e;g;\eta_A$, because
+$(E, e : X \mto A)$ is an equalizer in $\cat{C}$.
+
+So far we have shown that if $\cat{C}$ has a terminal object or
+equalizers, then $\cat{C}_T$ does as well, but for pure morphisms.
+What about products?  We can obtain products in $\cat{C}_T$ only if
+the monad $(T,\eta_A, \mu_A)$ has some additional structure.  Let us
+first try to lift products from $\cat{C}$ to pure morphisms in
+$\cat{C}_T$ and see what goes wrong.
+
+Suppose $\cat{C}$ has products.  Then we must define the projections
+and the universal map for products in $\cat{C}_T$.  The projections
+are $\pi_1;\eta_A : A \times B \mto TA$ and $\pi_2;\eta_B : A \times B
+\mto TB$.  Now let $\hat{f} : C \mto TA$ and $\hat{g} : C \mto TB$ be
+two pure morphisms in $\cat{C}_T$.  Certainly, we need to use the
+universal map for products in $\cat{C}_T$ to define the universal map
+for products in $\cat{C}_T$.  So we construct $\langle \hat{f},
+\hat{g} \rangle : C \mto TA \times TB$, but we need the target to be
+$T(A \times B)$.  Thus, we need a map $\mathsf{ten}_{A,B} : TA \times
+TB \mto T(A \times B)$, but this map does not exist in general.
+
+The class of monads that supports the map we need to obtain products
+in the Kleisli category for pure morphisms are called \emph{strong
+  monads}.
+\begin{definition}
+  \label{def:strong-monad}
+  A monad $(T,\eta,\mu)$ on a category $\cat{C}$ with products is
+  \textbf{strong} if there exists a natural transformation
+  $\mathsf{st}_{A,B} : A \times T B \mto T(A \times B)$ called the
+  \textbf{tensorial strength} of the monad.  In addition, the
+  following diagrams must commute:
+  \begin{center}
+    \begin{math}
+      \begin{array}{ccc}
+        \bfig
+    \qtriangle|amm|<700,500>[
+      1 \times TA`
+      T(1 \times A)`
+      TA;
+      \mathsf{st}_{1,A}`
+      \rho_{TA}`
+      T\rho_A]
+    \efig
+    & \quad & 
+    \bfig
+    \btriangle|maa|/<-``->/<800,500>[
+      A \times TB`
+      A \times T^2 B`
+      T(A \times TB);
+      \id_A \times \mu_B``
+      \mathsf{st}_{A,TB}]
+
+    \dtriangle(800,0)|ama|/`<-`->/<800,500>[
+      T(A \times B)`
+      T(A \times TB)`
+      T^2(A \times B);`
+      \mu_{A \times B}`
+      T\mathsf{st}_{A,B}]
+  
+    \Atriangle(0,500)|mma|<800,300>[
+      A \times B`
+      A \times TB`
+      T(A \times B);
+      \id_A \times \eta_B`
+      \eta_{A \times B}`
+      \mathsf{st}_{A,B}]
+    \efig
+      \end{array}
+    \end{math}
+  \end{center}
+  \begin{mathpar}       
+    \bfig
+    \square|amma|/`->``->/<1000,500>[
+      (A \times B) \times C``
+      A \times (B \times C)`
+      A \times T(B \times C);`
+      \alpha_{A,B,C}``
+      \id_A \times \mathsf{st}_{B,C}]
+    \morphism(1000,0)<1200,0>[
+      A \times T(B \times C)`
+      T(A \times T(B \times C));
+      \mathsf{st}_{A,B \times C}]
+    \morphism(0,500)<2200,0>[
+      (A \times B) \times C`
+      T((A \times B) \times C);
+      \mathsf{st}_{A \times B,C}]
+    \morphism(2200,500)|m|<0,-500>[
+      T((A \times B) \times C)`
+      T(A \times T(B \times C));
+      T\alpha_{A,B,C}]
+    \efig
+  \end{mathpar}
+\end{definition}
+\noindent
+In addition, using the symmetry map $\beta_{A,B} = \langle \pi_2, \pi_1
+\rangle : A \times B \mto B \times A$ definable in any category with
+products we can define the following additional tensorial strength:
+\[
+\mathsf{st}'_{A,B} = \beta_{TA,B};\mathsf{st}_{B,A};T\beta_{B,A} : TA \times B \mto T(A \times B)
+\]
+This map satisfies similar properties to the ones in the previous
+definition.
+
+Any strong monad gives rise to the following two maps:
+\[
+\begin{array}{lll}
+  \mathsf{ten}_{A,B} : TA \times TB \mto T(A \times B)\\
+  \mathsf{ten}_{A,B} = \mathsf{st}_{TA,B};T\mathsf{st}'_{A,B};\mu_{A \times B}\\
+  \\
+  \mathsf{ten}'_{A,B} : TA \times TB \mto T(A \times B)\\
+  \mathsf{ten}'_{A,B} = \mathsf{st'}_{A,TB};T\mathsf{st}_{A,B};\mu_{A \times B}\\
+\end{array}
+\]
+These two maps also satisfy several coherence diagrams similar to the
+ones for tensorial strength:
+\begin{center}
+  XXX
+\end{center}
+
+We now have the necessary map to lift products to the Kleisli category
+with respect to pure morphisms, but which map do we choose
+$\mathsf{ten}_{A,B}$ or $\mathsf{ten}'_{A,B}$?  For this particular
+result it does not matter which map is used.  There is a class of
+monads where $\mathsf{ten}_{A,B}$ and $\mathsf{ten}'_{A,B}$ are
+identified called \emph{commutative monads} and a large number of
+monads used in programming are commutative, but not all are.
+
+Getting back to the result at hand, suppose $\cat{C}$ has products and
+$\cat{C}_T$ is the Kleisli category of a strong monad $(T,\eta,\mu)$.
+Then we have the same projections as before $\pi_1;\eta_A : A \times B
+\mto TA$ and $\pi_2;\eta_B : A \times B \mto TB$.  Now let $\hat{f} :
+C \mto TA$ and $\hat{g} : C \mto TB$ be two pure morphisms in
+$\cat{C}_T$.  Then the universal map for products with respect to pure
+morphisms is defined by $\langle \hat{f}, \hat{g}
+\rangle;\mathsf{ten}_{A,B} : C \mto T(A \times B)$, but notice that
+this implies the following:
+\begin{center}
+  \begin{math}
+    \begin{array}{lll}
+      \langle \hat{f}, \hat{g}\rangle;\mathsf{ten}_{A,B}\\
+      \,\,\,\,\,\,\,\,\,\,\,= \langle f;\eta_A, g;\eta_B\rangle;\mathsf{ten}_{A,B} & \text{(by definition)}\\
+      \,\,\,\,\,\,\,\,\,\,\,= \langle f;\eta_A, g;\eta_B\rangle;\mathsf{st}_{TA,B};T\mathsf{st}'_{A,B};\mu_{A \times B} & \text{(by definition)}\\
+      \,\,\,\,\,\,\,\,\,\,\,= \langle f, g\rangle;(\eta_A \times \eta_B);\mathsf{st}_{TA,B};T\mathsf{st}'_{A,B};\mu_{A \times B} & \text{(by products)}\\
+      \,\,\,\,\,\,\,\,\,\,\,= \langle f, g\rangle;(\eta_A \times \id_{B});(\id_{TA} \otimes \eta_B);\mathsf{st}_{TA,B};T\mathsf{st}'_{A,B};\mu_{A \times B} & \text{(by functorality of $\times$)}\\
+      \,\,\,\,\,\,\,\,\,\,\,= \langle f, g\rangle;(\eta_A \times \id_{B});\eta_B;T\mathsf{st}'_{A,B};\mu_{A \times B} & \text{(by tensorial strength)}\\
+      \,\,\,\,\,\,\,\,\,\,\,= \langle f, g\rangle;(\eta_A \times \id_{B});\mathsf{st}'_{A,B};\eta_{T(A \times B)};\mu_{A \times B} & \text{(by naturality of $\eta$)}\\
+      \,\,\,\,\,\,\,\,\,\,\,= \langle f, g\rangle;(\eta_A \times \id_{B});\mathsf{st}'_{A,B} & \text{(by the monad laws)}\\
+      \,\,\,\,\,\,\,\,\,\,\,= \langle f, g\rangle;\eta_{A \times B} & \text{(by tensorial strength)}\\
+    \end{array}
+  \end{math}
+\end{center}
+At this point it is straightforward to show that the universal mapping
+property for products holds for pure morphisms.  In addition, the
+previous string of equations show that it does not matter if we would
+have chosen to use $\mathsf{ten}'_{A,B}$.
+
+Finally, we obtain the following results:
+\begin{lemma}[Terminal Object and Equalizers in the Kleisli Category]
+  \label{lemma:terminal_object_and_equalizers_in_the_kleisli_category}
+  If $\cat{C}$ has a terminal object or equalizers, then $\cat{C}_T$
+  has a terminal object or equalizers for pure morphisms where
+  $(T,\eta,\mu)$ is a monad.
+\end{lemma}
+
+\begin{lemma}[Limits in the Kleisli Category for Strong Monads]
+  \label{lemma:limits_in_the_kleisli_category_strong_monads}
+  If $\cat{C}$ has limits, then $\cat{C}_T$ has limits for pure
+  morphisms where $(T,\eta,\mu)$ is a strong monad.
+\end{lemma}
+
+
+%% \newcommand{\limit}[2]{\underleftarrow{\mathsf{lim}}_{#1}#2_{#1}}
+%% %% Suppose we have a limit $p_i : \limit{j}{D} \to D_i$ in $\cat{C}$ and
+%% %% a monad $(T, \eta, \mu)$ on $\cat{C}$.  Then we show that $p_i$ lifts
+%% %% to a limit, $p'_i : \limit{j}{TD} \to TD_i$, on pure morphisms in the
+%% %% Kleisli category $\cat{C}_T$ of $T$.
+%% % subsection what_properties_lift_to_the_kleisli_and_eilenberg-moore_categories? (end)
 % section jumping_inside_a_monad (end)
 
 \section{Categorical Model of $\lambda_T$}
